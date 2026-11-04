@@ -17,7 +17,7 @@ class ToolModel:
 
 
 def assignment_tool_model(*, mm_per_figure_unit):
-    """Return the model in mm; the PDF does not label its coordinate units.
+    """Return the model in mm.
 
     Set mm_per_figure_unit to 1 for mm or 10 for cm. The physical scale must
     be supplied explicitly because it is not stated in Figure 2.
