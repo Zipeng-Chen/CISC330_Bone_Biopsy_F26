@@ -1,0 +1,85 @@
+"""Print and verify the six required cases plus a combined pipeline case
+
+Run from the repository root: python -m examples.run_required_cases
+All positions and distances in these synthetic examples are in mm
+"""
+
+import numpy as np
+from numpy.testing import assert_allclose
+
+from bone_biopsy import assignment_tool_model, plan_biopsy, register_tool
+
+
+def vector_text(values):
+    # Roundoff is suppressed for readability; assertions use unrounded results
+    return "(" + ", ".join(f"{float(x):.6f}" for x in values) + ")"
+
+
+def main():
+    # Use an explicit synthetic scale for the analytic validation cases.
+    model = assignment_tool_model(mm_per_figure_unit=1.0)
+    print("SYNTHETIC VALIDATION: positions and distances in mm")
+    print("Figure coordinates treated as mm for these tests only.")
+    print("Predictions are independent analytic fixtures; tolerance = 1e-12.")
+    print()
+    print("REGISTRATION")
+    # Use explicit marker coordinates from the analytic predictions
+    cases = [
+        ("translation", [[12, 13, 2], [18, 13, 2], [12, 19, 2]],
+         [10, -5, 2], [0, -1, 0]),
+        ("rotation", [[-18, 2, 0], [-18, 8, 0], [-24, 2, 0]],
+         [0, 0, 0], [1, 0, 0]),
+        ("rotation + translation", [[-8, -3, 2], [-8, 3, 2], [-14, -3, 2]],
+         [10, -5, 2], [1, 0, 0]),
+    ]
+    last_tool = None
+    for name, markers, expected_tip, expected_axis in cases:
+        tool = register_tool(model.markers, markers, model.tip, model.axis)
+        # Compare full-precision results before formatting them for display
+        assert_allclose(tool.tip, expected_tip, atol=1e-12, rtol=0)
+        assert_allclose(tool.axis, expected_axis, atol=1e-12, rtol=0)
+        print(f"{name}:")
+        print(f"  tip  expected {vector_text(expected_tip)}; computed {vector_text(tool.tip)}")
+        print(f"  axis expected {vector_text(expected_axis)}; computed {vector_text(tool.axis)}")
+        print(f"  tip difference norm: {np.linalg.norm(tool.tip - expected_tip):.3e} mm")
+        print(f"  axis difference norm: {np.linalg.norm(tool.axis - expected_axis):.3e}")
+        last_tool = tool
+
+    print()
+    print("PLANNING: sphere center (0,0,0), radius 1, direction (0,0,1)")
+    # Use a unit sphere to test intersection, tangency, and a complete miss
+    plan_cases = [
+        ("intersects", [0, 0, -3], (0., 2., 4.)),
+        ("tangent", [1, 0, -3], (1., 0., 3.)),
+        ("miss", [2, 0, -3], (2., 0., None)),
+    ]
+    for status, tip, expected in plan_cases:
+        plan = plan_biopsy(tip, [0, 0, 1], [0, 0, 0], 1)
+        actual = (plan.targeting_error, plan.tissue_core_length, plan.insertion_depth)
+        if plan.status != status:
+            raise AssertionError(f"Expected {status}, got {plan.status}")
+        for computed, predicted in zip(actual, expected):
+            if predicted is None:
+                if computed is not None:
+                    raise AssertionError("A miss must have no insertion depth")
+            else:
+                assert_allclose(computed, predicted, atol=1e-12, rtol=0)
+        print(f"{status}: (error, core, insertion/contact depth)")
+        print(f"  expected {expected}; computed {actual}")
+
+    print()
+    print("COMBINED REGISTRATION -> PLANNING")
+    # A 3 mm offset in a 5 mm sphere gives an 8 mm chord at 100 mm axial depth
+    plan = plan_biopsy(last_tool.tip, last_tool.axis, [110, -2, 2], 5)
+    actual = [plan.targeting_error, plan.entry_depth,
+              plan.tissue_core_length, plan.insertion_depth]
+    expected = [3., 96., 8., 104.]
+    assert_allclose(actual, expected, atol=1e-12, rtol=0)
+    print("  (error, entry depth, core length, insertion depth)")
+    print(f"  expected {expected}; computed {actual}")
+    print()
+    print("PASS: all required examples and the combined case match predictions.")
+
+
+if __name__ == "__main__":
+    main()
