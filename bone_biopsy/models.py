@@ -1,4 +1,4 @@
-"""Ground-truth tool from assignment Figure 2, with an explicit unit conversion."""
+"""Ground-truth tool from Figure 2, converted from centimetres to millimetres."""
 
 from dataclasses import dataclass
 
@@ -16,16 +16,17 @@ class ToolModel:
     axis: np.ndarray
 
 
-def assignment_tool_model(*, mm_per_figure_unit):
-    """Return the model in mm.
+def assignment_tool_model(*, mm_per_figure_unit=10.0):
+    """Return the tool in mm using the confirmed Figure 2 coordinates in cm.
 
-    Set mm_per_figure_unit to 1 for mm or 10 for cm. The physical scale must
-    be supplied explicitly because it is not stated in Figure 2.
+    The default conversion is 10 mm per cm. Keep this value for the assignment;
+    the keyword remains available for custom synthetic-scale experiments.
+    Marker order is M1, M2, M3. The insertion axis is dimensionless.
     """
     scale = nonnegative_scalar(mm_per_figure_unit, "mm_per_figure_unit")
     if scale == 0:
         raise ValueError("mm_per_figure_unit must be positive")
-    # Convert positions only; the insertion axis is dimensionless.
+    # Figure 2 uses cm: convert positions once, without scaling the direction.
     return ToolModel(
         markers=scale * np.array([[2., 18., 0.], [8., 18., 0.], [2., 24., 0.]]),
         tip=np.zeros(3),

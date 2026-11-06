@@ -1,13 +1,15 @@
-"""Print and verify the six required cases plus a combined pipeline case
+"""Print and verify the required cases and the clarified Figure 6 error metric.
 
 Run from the repository root: python -m examples.run_required_cases
-All positions and distances in these synthetic examples are in mm
+All positions and distances are in mm; Figure 2 model coordinates start in cm.
 """
 
 import numpy as np
 from numpy.testing import assert_allclose
 
-from bone_biopsy import assignment_tool_model, plan_biopsy, register_tool
+from bone_biopsy import (
+    assignment_tool_model, distance_point_to_line, plan_biopsy, register_tool,
+)
 
 
 def vector_text(values):
@@ -16,20 +18,20 @@ def vector_text(values):
 
 
 def main():
-    # Use an explicit synthetic scale for the analytic validation cases.
-    model = assignment_tool_model(mm_per_figure_unit=1.0)
-    print("SYNTHETIC VALIDATION: positions and distances in mm")
-    print("Figure coordinates treated as mm for these tests only.")
+    # Convert the confirmed Figure 2 centimetres to millimetres once.
+    model = assignment_tool_model()
+    print("ASSIGNMENT VALIDATION: positions and distances in mm")
+    print("Figure 2 coordinates are cm; the model uses 10 mm per cm.")
     print("Predictions are independent analytic fixtures; tolerance = 1e-12.")
     print()
     print("REGISTRATION")
     # Use explicit marker coordinates from the analytic predictions
     cases = [
-        ("translation", [[12, 13, 2], [18, 13, 2], [12, 19, 2]],
+        ("translation", [[30, 175, 2], [90, 175, 2], [30, 235, 2]],
          [10, -5, 2], [0, -1, 0]),
-        ("rotation", [[-18, 2, 0], [-18, 8, 0], [-24, 2, 0]],
+        ("rotation", [[-180, 20, 0], [-180, 80, 0], [-240, 20, 0]],
          [0, 0, 0], [1, 0, 0]),
-        ("rotation + translation", [[-8, -3, 2], [-8, 3, 2], [-14, -3, 2]],
+        ("rotation + translation", [[-170, 15, 2], [-170, 75, 2], [-230, 15, 2]],
          [10, -5, 2], [1, 0, 0]),
     ]
     last_tool = None
@@ -78,7 +80,24 @@ def main():
     print("  (error, entry depth, core length, insertion depth)")
     print(f"  expected {expected}; computed {actual}")
     print()
-    print("PASS: all required examples and the combined case match predictions.")
+    print("FIGURE 6 METRIC: displaced target to actual needle axis")
+    # Planned target is (0,-100,0); actual tool is shifted 3 mm along x.
+    actual_tool = register_tool(
+        model.markers, [[23, 180, 0], [83, 180, 0], [23, 240, 0]],
+        model.tip, model.axis,
+    )
+    displaced_target = np.array([0., -104., 0.])
+    error = distance_point_to_line(
+        displaced_target, actual_tool.tip, actual_tool.axis,
+    )
+    # The 100 mm endpoint is 5 mm away, but Figure 6 measures the 3 mm normal.
+    endpoint = actual_tool.tip + 100 * actual_tool.axis
+    endpoint_distance = np.linalg.norm(displaced_target - endpoint)
+    assert_allclose([error, endpoint_distance], [3., 5.], atol=1e-12, rtol=0)
+    print(f"  perpendicular targeting error: {error:.6f} mm (expected 3)")
+    print(f"  endpoint distance, for comparison only: {endpoint_distance:.6f} mm")
+    print()
+    print("PASS: required examples, combined case, and Figure 6 metric agree.")
 
 
 if __name__ == "__main__":

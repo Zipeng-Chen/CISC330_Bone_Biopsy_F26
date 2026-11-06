@@ -3,8 +3,9 @@
 All positions, radii, and returned distances use the caller's common length
 unit (the project convention is millimetres). Directions are normalized, so
 intersection parameters are physical distances rather than arbitrary factors.
-The targeting error uses the infinite needle axis, as required by the rubric;
-harvestable core and insertion depth use only the forward ray from the tip.
+Figure 6 defines targeting error as perpendicular distance from the displaced
+target to the actual infinite needle axis. Harvestable core and insertion
+depth use only the forward ray from the tip.
 """
 
 from dataclasses import dataclass
@@ -47,6 +48,8 @@ def distance_point_to_line(point, line_point, direction) -> float:
     """Return the shortest distance to the infinite line through ``line_point``.
 
     For unit direction u and displacement w, the distance is ||w x u||.
+    In Figure 6, pass the displaced target and the actual registered axis;
+    this is not the distance to a needle endpoint after 100 mm insertion.
     This metric does not indicate whether the point lies ahead of the tip.
     """
     # Normalize the axis so distance is independent of direction-vector length.
@@ -99,6 +102,10 @@ def plan_biopsy(tip, direction, tumor_center, tumor_radius) -> BiopsyPlan:
     geometry. The needle's finite diameter, cutter length, and mechanical
     effects are not modeled. A miss or an entirely rearward intersection
     returns zero core and ``None`` for all insertion/contact depths.
+
+    For Figure 6 error evaluation, use the displaced target as tumor_center
+    and the actual registered tip/axis. Full-core depth reaches the far tumor
+    boundary, not its center or its near boundary.
     """
     origin = vector3(tip, "tip")
     axis = unit_vector(direction, "direction")
@@ -123,7 +130,7 @@ def plan_biopsy(tip, direction, tumor_center, tumor_radius) -> BiopsyPlan:
         far = 0.0
     if abs(near) <= tolerance:
         near = 0.0
-    # Clip entry at the tip and count only the remaining forward tissue.
+    # Clip entry at the tip; full-core insertion continues to the far boundary.
     entry = max(0.0, near)
     exit_ = max(0.0, far)
     core = max(0.0, exit_ - entry)

@@ -1,1 +1,0 @@
-"""Assignment validation tests."""

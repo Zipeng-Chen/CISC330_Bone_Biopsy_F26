@@ -11,8 +11,8 @@ from bone_biopsy.registration import register_rigid, register_tool
 
 class RegistrationTests(unittest.TestCase):
     def setUp(self):
-        # Synthetic fixture in mm; this is not a claim about the PDF's scale.
-        self.markers = np.array([[2., 18., 0.], [8., 18., 0.], [2., 24., 0.]])
+        # Independent fixture: Figure 2 centimetres converted to millimetres.
+        self.markers = np.array([[20., 180., 0.], [80., 180., 0.], [20., 240., 0.]])
         self.tip = np.zeros(3)
         self.axis = np.array([0., -1., 0.])
 
@@ -28,23 +28,23 @@ class RegistrationTests(unittest.TestCase):
 
     def test_required_translation(self):
         # Add (10, -5, 2) to each marker and tip; axis is unchanged.
-        self.check_pose([[12, 13, 2], [18, 13, 2], [12, 19, 2]],
+        self.check_pose([[30, 175, 2], [90, 175, 2], [30, 235, 2]],
                         np.eye(3), [10, -5, 2], [10, -5, 2], [0, -1, 0])
 
     def test_required_rotation(self):
         # +90 degrees about z maps (x,y,z) to (-y,x,z).
-        self.check_pose([[-18, 2, 0], [-18, 8, 0], [-24, 2, 0]],
+        self.check_pose([[-180, 20, 0], [-180, 80, 0], [-240, 20, 0]],
                         [[0, -1, 0], [1, 0, 0], [0, 0, 1]],
                         [0, 0, 0], [0, 0, 0], [1, 0, 0])
 
     def test_required_rotation_and_translation(self):
-        self.check_pose([[-8, -3, 2], [-8, 3, 2], [-14, -3, 2]],
+        self.check_pose([[-170, 15, 2], [-170, 75, 2], [-230, 15, 2]],
                         [[0, -1, 0], [1, 0, 0], [0, 0, 1]],
                         [10, -5, 2], [10, -5, 2], [1, 0, 0])
 
     def test_nonzero_tip_and_out_of_plane_rotation(self):
         # +90 degrees about x maps (x,y,z) to (x,-z,y), then add (3,4,5).
-        ct_markers = [[5, 4, 23], [11, 4, 23], [5, 4, 29]]
+        ct_markers = [[23, 4, 185], [83, 4, 185], [23, 4, 245]]
         result = register_tool(self.markers, ct_markers, [1, 2, 3], [0, -7, 0])
         assert_allclose(result.tip, [4, 1, 7], atol=1e-12, rtol=0)
         assert_allclose(result.axis, [0, 0, -1], atol=1e-12, rtol=0)
@@ -52,7 +52,7 @@ class RegistrationTests(unittest.TestCase):
     def test_identity_and_reverse_transform(self):
         identity = register_rigid(self.markers, self.markers)
         assert_allclose(identity.rotation, np.eye(3), atol=1e-12, rtol=0)
-        ct = np.array([[-8, -3, 2], [-8, 3, 2], [-14, -3, 2]])
+        ct = np.array([[-170, 15, 2], [-170, 75, 2], [-230, 15, 2]])
         forward = register_rigid(self.markers, ct)
         reverse = register_rigid(ct, self.markers)
         point = np.array([2., 3., 7.])
@@ -98,13 +98,23 @@ class RegistrationTests(unittest.TestCase):
 
 
 class ToolModelTests(unittest.TestCase):
-    def test_scale_is_explicit_and_does_not_scale_direction(self):
-        mm = assignment_tool_model(mm_per_figure_unit=1)
-        cm = assignment_tool_model(mm_per_figure_unit=10)
-        assert_allclose(cm.markers, 10 * mm.markers)
-        assert_allclose(cm.axis, mm.axis)
-        with self.assertRaises(TypeError):
-            assignment_tool_model()
+    def test_default_converts_confirmed_centimetres_to_millimetres(self):
+        model = assignment_tool_model()
+        assert_allclose(model.markers, [[20, 180, 0], [80, 180, 0], [20, 240, 0]],
+                        atol=0, rtol=0)
+        assert_allclose(model.tip, [0, 0, 0], atol=0, rtol=0)
+        assert_allclose(model.axis, [0, -1, 0], atol=0, rtol=0)
+        self.assertEqual(np.linalg.norm(model.markers[1] - model.markers[0]), 60)
+
+    def test_explicit_conversion_remains_compatible_and_axis_is_not_scaled(self):
+        model = assignment_tool_model()
+        explicit = assignment_tool_model(mm_per_figure_unit=10)
+        synthetic = assignment_tool_model(mm_per_figure_unit=1)
+        assert_allclose(explicit.markers, model.markers)
+        assert_allclose(model.markers, 10 * synthetic.markers)
+        assert_allclose(model.axis, synthetic.axis)
+
+    def test_invalid_model_scale_is_rejected(self):
         for scale in [0, -1, np.inf, np.nan]:
             with self.subTest(scale=scale), self.assertRaises(ValueError):
                 assignment_tool_model(mm_per_figure_unit=scale)

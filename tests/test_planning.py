@@ -18,6 +18,21 @@ class GeometryUtilitiesTests(unittest.TestCase):
             distance_point_to_line([3, 4, -20], [0, 0, 2], [0, 0, 8]), 5.0
         )
 
+    def test_figure_6_perpendicular_error_differs_from_100_mm_endpoint_error(self):
+        # Planned target (0,-100,0) moves to (0,-104,0); tool shifts sideways.
+        tip = np.array([3., 0., 0.])
+        axis = np.array([0., -1., 0.])
+        displaced_target = np.array([0., -104., 0.])
+        self.assertAlmostEqual(distance_point_to_line(displaced_target, tip, axis), 3)
+        self.assertAlmostEqual(np.linalg.norm(displaced_target - (tip + 100 * axis)), 5)
+        # Moving along the same axis cannot change the perpendicular error.
+        self.assertAlmostEqual(distance_point_to_line([0, -120, 0], tip, axis), 3)
+
+    def test_figure_6_uses_tilted_actual_axis_and_displaced_target(self):
+        # For u=(3,-4,0)/5 and C=(4,-103,0), |Cx*uy-Cy*ux|=58.6.
+        error = distance_point_to_line([4, -103, 0], [0, 0, 0], [3, -4, 0])
+        self.assertAlmostEqual(error, 58.6)
+
     def test_intersection_parameters_are_distances(self):
         self.assertEqual(
             intersect_line_sphere([0, 0, -3], [0, 0, 5], [0, 0, 0], 1),
