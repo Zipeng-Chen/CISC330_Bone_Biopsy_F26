@@ -7,10 +7,10 @@ targeting-error analysis for a tracked biopsy needle.
 
 | Component | Purpose | Repository status |
 | --- | --- | --- |
-| Tool calibration | Estimate the tool-frame tip and axis from constrained tracked movements; evaluate exact and noisy observations. | Separate team contribution; not included in this version. |
+| Tool calibration | Recover the tip by pivoting and the axis by spinning; validate exact and noisy marker observations. | Implemented and tested; 500-trial noise experiment included. |
 | Registration | Recover the tool-to-CT rigid transformation and transform the tip and axis. | Implemented and tested. |
 | Biopsy planning | Compute targeting error, available tissue-core length, and insertion depth for a spherical tumor. | Implemented and tested. |
-| Targeting-error simulation | Propagate marker-localization and target-displacement errors and estimate tolerable target uncertainty.|
+| Targeting-error simulation | Propagate marker-localization and target-displacement errors and estimate tolerable target uncertainty. | Separate team contribution; not included in this version. |
 
 ```text
 Calibration -> tool-frame tip and axis
@@ -68,11 +68,56 @@ Use Python 3.10 or newer. From the repository root:
 python -m pip install -r requirements.txt
 python -m unittest discover -s tests -v
 python -m examples.run_required_cases
+python -m examples.run_calibration
 ```
 
-The 41 tests cover registration, model units, sphere geometry, invalid inputs,
-and the combined pipeline. The example runner checks the six required cases,
-a combined case, and the distinction between Figure 6 error and endpoint error.
+The tests cover calibration, registration, model units, sphere geometry, invalid
+inputs, and the combined pipeline. `run_required_cases` checks the six required
+registration/planning cases and the Figure 6 metric. `run_calibration` checks
+exact recovery and repeats noisy calibration 500 times using 60 pivot and 60
+spin observations per trial.
+
+## Tool calibration
+
+Calibration uses two constrained movements and the existing registration function:
+
+1. **Pivot:** hold the tip fixed while tilting about several axes. Recover each
+   pose and solve `R_i * tip + t_i = pivot` for the unknown tip and pivot point.
+2. **Spin:** rotate the shaft inside a fixed sleeve without tilting or sliding.
+   Fit the planes of the marker circles, combine their normals, and rotate the
+   resulting axis into the model frame. The calibrated tip resolves which sign
+   points toward insertion; the marker cluster must lie behind the tip.
+
+The solvers receive marker coordinates, not the true tip or axis. Simulated
+Gaussian marker noise has **0.357719874 mm standard deviation per coordinate**,
+which gives the required 95% probability of a 3D marker error below 1 mm.
+
+Exact recovery is within numerical precision. Across 500 trials with seed 2026,
+the 95th-percentile tip error is **0.797692 mm** and axis error is **0.124624
+degrees**. These are observed calibration errors, not clinical accuracy limits.
+
+See [the calibration method and results](docs/calibration-methods-and-results.md)
+for motion constraints, equations, error statistics, and integration instructions.
+The [recorded results](docs/calibration-results.json) include all trial errors.
+
+```python
+from bone_biopsy import assignment_tool_model, calibrate_tool, register_tool
+
+model = assignment_tool_model()
+# Each observed sequence has shape (poses, markers, 3), with positions in mm.
+calibrated = calibrate_tool(model.markers, pivot_observations, spin_observations)
+tool = register_tool(model.markers, ct_markers, calibrated.tip, calibrated.axis)
+```
+
+To reproduce the saved results and optional figures:
+
+```console
+python -m pip install -r requirements-plots.txt
+python -m examples.run_calibration --trials 500 --poses 60 --seed 2026 --output docs/calibration-results.json --plot-dir docs
+```
+
+Matplotlib is needed only for figures; the main calculation and tests still use
+NumPy only. Existing registration and planning examples can be run separately.
 
 ## Example
 
@@ -145,6 +190,12 @@ endpoint distance is not the Figure 6 targeting error.
 | Function | Result |
 | --- | --- |
 | `assignment_tool_model(mm_per_figure_unit=10.0)` | `ToolModel` with mm `markers`, mm `tip`, and dimensionless `axis` |
+| `calibrate_tip(model_markers, pivot_observations)` | Model-frame tip, tracker-frame pivot, residual, and conditioning |
+| `calibrate_axis(model_markers, spin_observations, calibrated_tip=...)` | Model-frame insertion axis and spin diagnostics |
+| `calibrate_tool(model_markers, pivot_observations, spin_observations)` | Calibrated tip and axis for `register_tool` |
+| `simulate_pivot_motion(model, ...)`, `simulate_spin_motion(model, ...)` | Simulated observations and true poses for validation |
+| `sigma_for_radial_bound(bound_mm=1, probability=0.95)` | Per-coordinate sigma for the specified 3D radial bound |
+| `add_marker_noise(observations, sigma_mm, rng=...)` | Independent noisy marker observations |
 | `register_rigid(source_markers, destination_markers)` | Rotation, translation, and RMS marker-fit residual |
 | `register_tool(model_markers, ct_markers, tip_tool, axis_tool)` | Registered CT tip, axis, and transform |
 | `distance_point_to_line(point, line_point, direction)` | Perpendicular distance to the infinite axis |
@@ -166,6 +217,7 @@ endpoint distance is not the Figure 6 targeting error.
   insertion reaches the far tumor boundary for the full core; use Figure 6
   to interpret targeting error.
 - *MathPrimer-Part3*: coordinate transformations and registration errors.
+- *Calibration*, slides 5-7 and 11: pivot least squares and spin-plane axis calibration.
 
 The implementation uses the assignment's straight needle and spherical tumor
-geometry
+geometry. The target-displacement uncertainty sweep remains a separate team component.
