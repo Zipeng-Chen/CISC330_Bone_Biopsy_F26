@@ -1,0 +1,33 @@
+Run date: 2026-11-14
+Command: python -m q1_tool_calibration.run
+
+CALIBRATION: Figure 2 cm converted to mm
+Poses: 60 pivot + 60 spin; noisy trials: 500
+Marker sigma per coordinate: 0.357719874 mm
+
+HAND-CALCULATED CHECKS (worked derivations in q1_tool_calibration/README.md):
+  tip expected [1, 2, 3]; computed [1. 2. 3.] mm
+  pivot expected [10, 20, 30]; computed [10. 20. 30.] mm
+  tip difference: 6.877e-14 mm
+  axis expected [0, -1, 0]; computed [-1.40128078e-16 -1.00000000e+00  0.00000000e+00]
+  axis difference: 8.029e-15 degrees
+
+exact:
+  tip (mm): [ 2.16276974e-14 -7.10542736e-15 -7.36001967e-16]
+  axis: [ 5.32704667e-18 -1.00000000e+00 -2.47848617e-17]
+  tip error: 2.27768763e-14 mm
+  axis error: 1.45249807e-15 degrees
+
+first_noisy_trial:
+  tip (mm): [ 0.09751964  0.11974373 -0.02350761]
+  axis: [ 6.28276047e-05 -9.99999278e-01 -1.20042878e-03]
+  tip error: 0.156208994 mm
+  axis error: 0.0688736561 degrees
+
+Repeated noisy calibration:
+  tip_error_mm: mean=0.419917, median=0.390112, rms=0.465978, p95=0.797692, maximum=1.184480
+  axis_error_degrees: mean=0.064259, median=0.059526, rms=0.072717, p95=0.124624, maximum=0.181567
+Marker errors below 1 mm: 95.0439%
+PASS: exact calibration and calibrated registration/planning match predictions.
+Saved results: calibration-results.json
+PASS: 22 unit tests; details in outputs/test_report.txt

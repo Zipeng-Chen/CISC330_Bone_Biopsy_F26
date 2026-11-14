@@ -8,7 +8,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from ._validation import points3, unit_vector, vector3
+from utils._validation import points3, unit_vector, vector3
 
 
 @dataclass(frozen=True)

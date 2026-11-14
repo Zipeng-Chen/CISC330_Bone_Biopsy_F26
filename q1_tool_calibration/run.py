@@ -1,12 +1,18 @@
 """Validate exact calibration and quantify errors from repeated noisy trials.
 
-Run from the repository root: python -m examples.run_calibration
-Optional: --output docs/calibration-results.json --plot-dir docs
+Run from the repository root: python -m q1_tool_calibration.run
+Optional: --plot-dir q1_tool_calibration/outputs
 """
 
 import argparse
 import json
 from pathlib import Path
+import shlex
+import sys
+
+# Resolve imports for direct execution as well as python -m.
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import numpy as np
 from numpy.testing import assert_allclose
@@ -15,7 +21,11 @@ from bone_biopsy import (
     add_marker_noise, assignment_tool_model, calibrate_axis, calibrate_tip, calibrate_tool, plan_biopsy,
     register_tool, sigma_for_radial_bound, simulate_pivot_motion, simulate_spin_motion,
 )
-from bone_biopsy.geometry import direction_error_degrees, rotation_about_axis
+from utils.geometry import direction_error_degrees, rotation_about_axis
+
+from utils.reporting import run_tests, run_with_log
+
+OUTPUTS = Path(__file__).resolve().parent / "outputs"
 
 
 def summarize(values):
@@ -41,7 +51,7 @@ def error_record(calibrated, model):
 
 
 def check_hand_calculations(model_markers, calibrated_tip):
-    """Check the small pivot and spin examples worked out in docs/report.md."""
+    """Check the small pivot and spin examples worked out in q1_tool_calibration/README.md."""
     # These four tracker frames are calculated directly from p=(1,2,3), q=(10,20,30).
     pivot_markers = np.array([
         [[29, 198, 27], [89, 198, 27], [29, 258, 27]],
@@ -146,15 +156,23 @@ def main():
     parser.add_argument("--trials", type=int, default=500)
     parser.add_argument("--poses", type=int, default=60, help="poses per calibration movement")
     parser.add_argument("--seed", type=int, default=2026, help="marker-noise random seed")
-    parser.add_argument("--output", type=Path, help="optional JSON results file")
+    parser.add_argument("--output", type=Path, default=OUTPUTS / "calibration-results.json",
+                        help="JSON results file (default: this question's outputs folder)")
     parser.add_argument("--plot-dir", type=Path, help="optional figures; requires matplotlib")
     args = parser.parse_args()
+    command = "python -m q1_tool_calibration.run"
+    if sys.argv[1:]:
+        command += " " + shlex.join(sys.argv[1:])
+    run_with_log(lambda: run(args), OUTPUTS / "run_log.txt", command)
+
+
+def run(args):
     report, model, pivot, spin = run_experiment(trials=args.trials, poses=args.poses, seed=args.seed)
     print("CALIBRATION: Figure 2 cm converted to mm")
     print(f"Poses: {args.poses} pivot + {args.poses} spin; noisy trials: {args.trials}")
     print(f"Marker sigma per coordinate: {report['configuration']['marker_sigma_per_coordinate_mm']:.9f} mm")
     hand = report["hand_calculations"]
-    print("\nHAND-CALCULATED CHECKS (worked derivations in docs/report.md):")
+    print("\nHAND-CALCULATED CHECKS (worked derivations in q1_tool_calibration/README.md):")
     print(f"  tip expected {hand['tip_expected_mm']}; computed {np.array(hand['tip_computed_mm'])} mm")
     print(f"  pivot expected {hand['pivot_expected_mm']}; computed {np.array(hand['pivot_computed_mm'])} mm")
     print(f"  tip difference: {hand['tip_difference_mm']:.3e} mm")
@@ -175,11 +193,13 @@ def main():
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(report, indent=2, allow_nan=False) + "\n", encoding="utf-8")
-        print(f"Saved results: {args.output}")
+        print(f"Saved results: {args.output.name}")
     if args.plot_dir:
-        from .plot_calibration import save_calibration_figures
+        from q1_tool_calibration.plot_results import save_calibration_figures
         save_calibration_figures(model, pivot, spin, report, args.plot_dir)
         print(f"Saved calibration figures in: {args.plot_dir}")
+
+    run_tests("q1_tool_calibration.test_calibration", OUTPUTS / "test_report.txt")
 
 
 if __name__ == "__main__":

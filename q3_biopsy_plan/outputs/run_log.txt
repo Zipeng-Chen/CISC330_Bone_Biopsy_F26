@@ -1,0 +1,22 @@
+Run date: 2026-11-14
+Command: python -m q3_biopsy_plan.run
+
+All positions and distances are in mm; comparisons use tolerance 1e-12.
+PLANNING: sphere center (0,0,0), radius 1, direction (0,0,1)
+intersects: (error, core, insertion/contact depth)
+  expected (0.0, 2.0, 4.0); computed (0.0, 2.0, 4.0)
+tangent: (error, core, insertion/contact depth)
+  expected (1.0, 0.0, 3.0); computed (1.0, 0.0, 3.0)
+miss: (error, core, insertion/contact depth)
+  expected (2.0, 0.0, None); computed (2.0, 0.0, None)
+
+COMBINED REGISTRATION -> PLANNING
+  (error, entry depth, core length, insertion depth)
+  expected [3.0, 96.0, 8.0, 104.0]; computed [3.000000000000037, 96.00000000000009, 7.999999999999943, 104.00000000000003]
+
+FIGURE 6 METRIC: displaced target to actual needle axis
+  perpendicular targeting error: 3.000000 mm (expected 3)
+  endpoint distance, for comparison only: 5.000000 mm
+
+PASS: required examples, combined case, and Figure 6 metric agree.
+PASS: 26 unit tests; details in outputs/test_report.txt

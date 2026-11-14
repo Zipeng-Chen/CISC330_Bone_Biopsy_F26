@@ -1,0 +1,31 @@
+test_inputs_are_not_modified (q3_biopsy_plan.test_planning.BiopsyPlanningTests.test_inputs_are_not_modified) ... ok
+test_invalid_inputs_raise_useful_errors (q3_biopsy_plan.test_planning.BiopsyPlanningTests.test_invalid_inputs_raise_useful_errors) ... ok
+test_nonunit_direction_does_not_change_depths (q3_biopsy_plan.test_planning.BiopsyPlanningTests.test_nonunit_direction_does_not_change_depths) ... ok
+test_oblique_trajectory_and_translated_sphere (q3_biopsy_plan.test_planning.BiopsyPlanningTests.test_oblique_trajectory_and_translated_sphere) ... ok
+test_required_intersecting_trajectory (q3_biopsy_plan.test_planning.BiopsyPlanningTests.test_required_intersecting_trajectory) ... ok
+test_required_missing_trajectory (q3_biopsy_plan.test_planning.BiopsyPlanningTests.test_required_missing_trajectory) ... ok
+test_required_tangent_trajectory (q3_biopsy_plan.test_planning.BiopsyPlanningTests.test_required_tangent_trajectory) ... ok
+test_reversing_direction_changes_forward_reachability (q3_biopsy_plan.test_planning.BiopsyPlanningTests.test_reversing_direction_changes_forward_reachability) ... ok
+test_sphere_behind_tip_has_no_forward_core (q3_biopsy_plan.test_planning.BiopsyPlanningTests.test_sphere_behind_tip_has_no_forward_core) ... ok
+test_surface_tip_pointing_inward (q3_biopsy_plan.test_planning.BiopsyPlanningTests.test_surface_tip_pointing_inward) ... ok
+test_surface_tip_pointing_outward_has_no_forward_tissue (q3_biopsy_plan.test_planning.BiopsyPlanningTests.test_surface_tip_pointing_outward_has_no_forward_tissue) ... ok
+test_tangent_behind_tip (q3_biopsy_plan.test_planning.BiopsyPlanningTests.test_tangent_behind_tip) ... ok
+test_tiny_sphere_is_not_collapsed_by_absolute_tolerance (q3_biopsy_plan.test_planning.BiopsyPlanningTests.test_tiny_sphere_is_not_collapsed_by_absolute_tolerance) ... ok
+test_tip_inside_sphere_only_counts_remaining_forward_tissue (q3_biopsy_plan.test_planning.BiopsyPlanningTests.test_tip_inside_sphere_only_counts_remaining_forward_tissue) ... ok
+test_zero_radius_off_axis_is_miss (q3_biopsy_plan.test_planning.BiopsyPlanningTests.test_zero_radius_off_axis_is_miss) ... ok
+test_zero_radius_on_axis_is_zero_length_contact (q3_biopsy_plan.test_planning.BiopsyPlanningTests.test_zero_radius_on_axis_is_zero_length_contact) ... ok
+test_zero_radius_on_oblique_axis_tolerates_roundoff (q3_biopsy_plan.test_planning.BiopsyPlanningTests.test_zero_radius_on_oblique_axis_tolerates_roundoff) ... ok
+test_figure_6_perpendicular_error_differs_from_100_mm_endpoint_error (q3_biopsy_plan.test_planning.GeometryUtilitiesTests.test_figure_6_perpendicular_error_differs_from_100_mm_endpoint_error) ... ok
+test_figure_6_uses_tilted_actual_axis_and_displaced_target (q3_biopsy_plan.test_planning.GeometryUtilitiesTests.test_figure_6_uses_tilted_actual_axis_and_displaced_target) ... ok
+test_geometry_rejects_invalid_inputs (q3_biopsy_plan.test_planning.GeometryUtilitiesTests.test_geometry_rejects_invalid_inputs) ... ok
+test_intersection_parameters_are_distances (q3_biopsy_plan.test_planning.GeometryUtilitiesTests.test_intersection_parameters_are_distances) ... ok
+test_line_intersection_keeps_negative_parameters (q3_biopsy_plan.test_planning.GeometryUtilitiesTests.test_line_intersection_keeps_negative_parameters) ... ok
+test_near_tangent_intersection_keeps_nonzero_chord (q3_biopsy_plan.test_planning.GeometryUtilitiesTests.test_near_tangent_intersection_keeps_nonzero_chord) ... ok
+test_near_tangent_miss_is_not_rounded_to_a_hit (q3_biopsy_plan.test_planning.GeometryUtilitiesTests.test_near_tangent_miss_is_not_rounded_to_a_hit) ... ok
+test_point_to_infinite_line (q3_biopsy_plan.test_planning.GeometryUtilitiesTests.test_point_to_infinite_line) ... ok
+test_tangent_is_a_double_root (q3_biopsy_plan.test_planning.GeometryUtilitiesTests.test_tangent_is_a_double_root) ... ok
+
+----------------------------------------------------------------------
+Ran 26 tests in 0.003s
+
+OK

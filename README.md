@@ -1,132 +1,166 @@
 # CT-guided Bone Biopsy Planning
 
-CISC/CMPE 330 Assignment 2.
+CISC/CMPE 330 Assignment 2
 
-**Start with [the report](docs/report.md).** It explains the methods, works out
-the expected answers by hand, compares them with the program output, and
-discusses what the results mean. The file guide below shows where each part
-is implemented and tested.
+Each completed question has its own explanation, code, tests, and saved output.
+Read the question's README for the hand calculations and interpretation, then
+use its run log to compare the predictions with the computed results.
 
-## Work included
+## Questions
 
-| Component | Status |
-| --- | --- |
-| Tool calibration | Tip from pivoting and axis from spinning; exact checks and 500 noisy trials |
-| Registration | Model-to-CT pose; translation, rotation, and combined tests |
-| Biopsy planning | Targeting error, core length, and insertion depth; hit, tangent, and miss tests |
-| Targeting-error simulation | Separate team component; the target-displacement sweep is not included here |
+| Question | Folder and explanation | Status |
+| --- | --- | --- |
+| Q1: Tool calibration | [q1_tool_calibration](q1_tool_calibration/README.md) | Implemented and checked with exact and noisy observations |
+| Q2: Registration | [q2_registration](q2_registration/README.md) | Implemented; translation, rotation, and combined cases checked |
+| Q3: Biopsy planning | [q3_biopsy_plan](q3_biopsy_plan/README.md) | Implemented; hit, tangent, miss, and combined cases checked |
+| Q4: Targeting-error simulation | [q4_targeting_error](q4_targeting_error/) | Empty for our teammate |
 
-The workflow is **calibration -> registration -> biopsy planning**. Figure 2
-positions start in cm and are converted to mm. All later positions and lengths
-use mm; directions are unit vectors. Detailed conventions are in report Section 1.
+Q4 contains only an empty `.gitkeep` file so Git preserves the folder.
+There is no Q4 implementation, explanation, or result yet.
 
-## Run the code
+## Run and reproduce
 
-Use Python 3.10 or newer. Run these commands from this repository's root:
+From the repository root, with Python 3.10 or later:
 
-```console
+```bash
 python -m pip install -r requirements.txt
-python -m examples.run_required_cases
-python -m examples.run_calibration
-python -m unittest discover -s tests -v
+python -m verification.run_all
 ```
 
-The first runner prints the registration/planning predictions and computed
-answers. The second prints the small hand-calculated calibration checks,
-exact calibration, and the 500-trial noisy experiment. The test suite contains
-63 tests. The [saved console output](docs/validation-output.txt) records a
-successful run of both examples and the complete test suite.
+This runs Q1-Q3, saves their outputs, and runs all 63 unit tests. It explicitly
+skips the empty Q4 folder. The recorded run uses Python 3.12.14 and NumPy 2.3.5;
+other numerical-library versions may produce small last-digit differences.
+The saved run can be read in
+[verification/full_reproduction.txt](verification/full_reproduction.txt), with
+all test names in [verification/all_tests.txt](verification/all_tests.txt).
 
-To save the calibration results again:
+To run one question:
 
-```console
-python -m examples.run_calibration --trials 500 --poses 60 --seed 2026 --output docs/calibration-results.json
+```bash
+python -m q1_tool_calibration.run
+python -m q2_registration.run
+python -m q3_biopsy_plan.run
 ```
 
-The calibration figures are optional outputs. To regenerate them:
+Each command prints the hand predictions and computed answers, runs that
+question's tests, and refreshes its `outputs/run_log.txt` and
+`outputs/test_report.txt`. Q1 also saves all 500 noisy trials to JSON.
+To run only the tests:
 
-```console
-python -m pip install -r requirements-plots.txt
-python -m examples.run_calibration --trials 500 --poses 60 --seed 2026 --output docs/calibration-results.json --plot-dir docs
+```bash
+python -m unittest discover -s . -p "test_*.py" -v
 ```
 
-NumPy is the only dependency needed for the calculations and tests. Matplotlib
-is needed only for plotting.
+NumPy is the only dependency for the calculations and tests. Matplotlib is
+optional for regenerating Q1 figures; see the
+[Q1 instructions](q1_tool_calibration/README.md#run-this-question).
+The four saved figures are included for reading the explanations.
 
 ## File guide
 
-### Report and recorded results
+The question READMEs explain every file in their folders. Shared files are:
 
-| File | What it contains |
+| File or folder | Purpose |
 | --- | --- |
-| [README.md](README.md) | Starting point, run commands, project scope, and this file guide |
-| [docs/report.md](docs/report.md) | Main explanation: units, calibration, hand calculations, registration, planning, comparisons, and limitations |
-| [docs/validation-output.txt](docs/validation-output.txt) | Actual console output from the two example runners and the 63-test suite |
-| [docs/calibration-results.json](docs/calibration-results.json) | Experiment settings, hand-check results, exact/noisy estimates, summary statistics, and all 500 trial errors |
-| [docs/calibration_motions.png](docs/calibration_motions.png) | Illustration of the pivot and spin constraints used by calibration |
-| [docs/calibration_errors.png](docs/calibration_errors.png) | Histograms of the recorded tip and axis errors |
-| [docs/registration_frames.png](docs/registration_frames.png) | Tool geometry before and after the worked rotation/translation |
-| [docs/biopsy_trajectories.png](docs/biopsy_trajectories.png) | The intersecting, tangent, and missing unit-sphere examples |
-
-### Implementation
-
-| File | What it does |
-| --- | --- |
-| [bone_biopsy/models.py](bone_biopsy/models.py) | Defines the shared Figure 2 model and converts cm to mm |
-| [bone_biopsy/_validation.py](bone_biopsy/_validation.py) | Checks shapes, finite coordinates, nonnegative inputs, and nonzero directions |
-| [bone_biopsy/registration.py](bone_biopsy/registration.py) | Fits a rigid pose from matching markers and transforms a tip or direction |
-| [bone_biopsy/planning.py](bone_biopsy/planning.py) | Calculates point-to-axis distance, sphere intersections, core length, and insertion depth |
-| [bone_biopsy/calibration.py](bone_biopsy/calibration.py) | Solves pivot-tip and spin-axis calibration using the existing registration function |
-| [bone_biopsy/calibration_simulation.py](bone_biopsy/calibration_simulation.py) | Generates the constrained motions and simulated marker observations |
-| [bone_biopsy/geometry.py](bone_biopsy/geometry.py) | Provides axis-angle rotation, plane fitting, and angular-error calculations |
-| [bone_biopsy/noise.py](bone_biopsy/noise.py) | Converts the radial error bound to coordinate sigma and adds Gaussian marker noise |
-| [bone_biopsy/__init__.py](bone_biopsy/__init__.py) | Exposes the functions used by the examples and other team components |
-
-### Examples and tests
-
-| File | What it checks or produces |
-| --- | --- |
-| [examples/run_required_cases.py](examples/run_required_cases.py) | Runs the six required registration/planning cases, the combined example, and the Figure 6 distance comparison |
-| [examples/run_calibration.py](examples/run_calibration.py) | Runs the hand-calculated pivot/spin checks, exact calibration, noisy trials, and calibration-to-planning check |
-| [examples/plot_calibration.py](examples/plot_calibration.py) | Draws the motion and error plots from the calibration data; it does not implement another solver |
-| [tests/test_registration.py](tests/test_registration.py) | Checks known poses, nonzero tips, reflections, model units, and invalid marker layouts |
-| [tests/test_planning.py](tests/test_planning.py) | Checks the three required paths, forward-only insertion, near tangency, and invalid geometry |
-| [tests/test_calibration.py](tests/test_calibration.py) | Checks the motion constraints, hand fixture, nonzero/oblique model, noise distribution, degenerate inputs, and integration |
-| [tests/test_integration.py](tests/test_integration.py) | Checks registration followed by planning, including the displaced-target example |
-| [examples/__init__.py](examples/__init__.py), [tests/__init__.py](tests/__init__.py) | Mark the folders as Python packages; they contain no separate algorithm |
-
-### Setup files
-
-| File | Purpose |
-| --- | --- |
+| [README.md](README.md) | Question map, run commands, common conventions, limitations, and references |
+| [utils/models.py](utils/models.py) | Shared Figure 2 tool model, converted from cm to mm |
+| [utils/geometry.py](utils/geometry.py) | Rotation, plane fitting, and angular error calculations |
+| [utils/noise.py](utils/noise.py) | Gaussian marker noise and the 3D radial probability calculation |
+| [utils/_validation.py](utils/_validation.py) | Shared checks for coordinates, directions, and scalar inputs |
+| [utils/reporting.py](utils/reporting.py) | Saves console output and each question's test results |
+| [utils/__init__.py](utils/__init__.py) | Makes the shared helpers importable |
+| [bone_biopsy/__init__.py](bone_biopsy/__init__.py) | Preserves the team's existing imports; points to the implementations in Q1-Q3 and utils |
+| [verification](verification/README.md) | Full reproduction command, cross-question tests, and combined logs |
 | [requirements.txt](requirements.txt) | NumPy dependency for calculations and tests |
-| [requirements-plots.txt](requirements-plots.txt) | Adds Matplotlib for optional figures |
-| [.gitignore](.gitignore) | Keeps Python caches and local environments out of Git |
+| [requirements-plots.txt](requirements-plots.txt) | Optional Matplotlib dependency for calibration figures |
+| [.gitignore](.gitignore) | Excludes local environments, caches, and compiled Python files |
 
-The example runners make the worked cases easy to inspect. The unit tests
-check additional behavior automatically. Both call the same implementation
-modules; neither contains a second copy of a calibration, registration, or
-planning algorithm.
+## How the parts connect
 
-## Connecting to the other team component
+Calibration finds the tip and axis relative to the tool markers. Registration
+finds where that calibrated tool is in a new CT image. Planning uses the
+registered tip and axis to calculate targeting error, tissue-core length, and
+insertion depth.
+
+The existing public imports still work:
+
+```python
+from bone_biopsy import calibrate_tool, register_tool, plan_biopsy
+```
 
 `calibrate_tool(model_markers, pivot_observations, spin_observations)` returns
 `tip` and `axis` in the model frame. Pass them into
 `register_tool(model_markers, ct_markers, tip, axis)` to obtain CT-frame values,
-then pass those to `plan_biopsy`.
+then pass those to `plan_biopsy` with the tumor center and radius in mm.
+Existing submodule imports such as `bone_biopsy.registration` also work.
+There is one implementation of each algorithm, located in its question folder.
 
-Keep the marker order and mm units consistent. The noise helper
-`sigma_for_radial_bound()` returns the per-coordinate sigma for the assignment's
-1 mm radial 95% bound. The target-displacement simulation must still be added
-and evaluated separately; the calibration results do not establish its limit.
+The noise helper `sigma_for_radial_bound()` returns the per-coordinate sigma
+for the assignment's 1 mm radial 95% bound. Q4 can reuse this helper and the
+calibration, registration, and planning functions. Its target-displacement
+simulation and final threshold analysis still need to be added.
 
-## Submission contents
+## Units and coordinate frames
 
-Include this README, the report and its supporting results/figures, the source
-modules, the example runners, the tests, and the dependency files listed above.
-The report is the main written explanation; console output and test results
-support it.
+The coordinates in assignment Figure 2 are in cm, as clarified by the
+professor. The code uses mm, so each position is multiplied by 10 once.
 
-When preparing a ZIP, leave out `.git`, `.venv`, `__pycache__`, notebook
-checkpoints, temporary files, and local backup copies. Keep one current report
-and one implementation of each algorithm.
+| Quantity | Figure 2 | Value used by the code |
+| --- | --- | --- |
+| M1 | (2,18,0) cm | (20,180,0) mm |
+| M2 | (8,18,0) cm | (80,180,0) mm |
+| M3 | (2,24,0) cm | (20,240,0) mm |
+| Tip | (0,0,0) cm | (0,0,0) mm |
+| Insertion axis | (0,-1,0) | (0,-1,0), dimensionless |
+
+A direction has no length unit, so it is not multiplied by 10. Values already
+given in mm, such as the 100 mm target depth and the 1 mm marker-error bound,
+also stay unchanged. `assignment_tool_model()` applies the cm-to-mm conversion.
+
+There are three frames: the model frame attached to the tool, the optical
+tracker frame used during calibration, and the CT frame used during planning.
+Every marker array uses the order M1, M2, M3. Matching the wrong rows would
+describe a different correspondence problem.
+
+For a point, the model-to-destination transformation is `x = R p + t`. For a
+direction, it is `u = R v`. Translation moves a position but cannot change the
+direction of a line. The arrays store points as rows, so the equivalent code
+for several points is `points @ R.T + t`.
+
+## Limitations
+
+The exact cases check whether the geometry and frame transformations are
+implemented correctly. The noisy calibration experiment shows how the stated
+marker noise affects one chosen calibration motion design. The motions stay
+fixed across the 500 trials; the measurement noise changes independently.
+
+The experiments assume rigid markers, exact model marker positions, independent
+Gaussian measurement errors, and correctly constrained pivoting and spinning.
+They do not include tip slip, sleeve movement, marker mounting error,
+correlated tracking errors, or needle bending. These effects could make the
+real errors different from the simulated ones.
+
+The planning model contains a straight needle axis and a sphere. It does not
+check nearby anatomy, whether the full needle diameter fits through an access
+path, or whether a particular instrument can collect the calculated core.
+A geometrically intersecting line is therefore not enough to establish that
+a procedure is safe. A small marker-fit or calibration residual also cannot
+establish safety by itself.
+
+The 95th-percentile calibration errors do not prove the separate 100 mm / 3 mm
+compound targeting requirement. That requires the remaining simulation with
+marker-localization error and displaced targets. No maximum tolerable target
+displacement is claimed here.
+
+## References
+
+- *CT-guided Bone Biopsy Planning*, CISC/CMPE 330 Assignment 2: pages 1-2 for
+  calibration; pages 3-4 for registration and planning; Figure 6 for targeting
+  error; and the grading rubric for the required validation cases.
+- Gabor Fichtinger, *Calibration* (2026), slides 5-7 for the least-squares
+  pivot equations and slide 11 for spin-axis calibration from marker planes.
+- *MathPrimer-Part3*: point/direction transformations, rigid registration,
+  and the distinction between marker fit and target accuracy.
+- Professor Fichtinger's feedback: Figure 2 uses cm; insertion traverses the
+  full available core; and targeting error should be read from Figure 6.
+

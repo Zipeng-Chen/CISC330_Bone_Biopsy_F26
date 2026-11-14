@@ -4,8 +4,8 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from ._validation import nonnegative_scalar, points3, unit_vector, vector3
-from .geometry import rotation_about_axis
+from utils._validation import nonnegative_scalar, points3, unit_vector, vector3
+from utils.geometry import rotation_about_axis
 
 
 @dataclass(frozen=True)

@@ -13,7 +13,7 @@ from math import sqrt
 
 import numpy as np
 
-from ._validation import nonnegative_scalar, unit_vector, vector3
+from utils._validation import nonnegative_scalar, unit_vector, vector3
 
 
 @dataclass(frozen=True)

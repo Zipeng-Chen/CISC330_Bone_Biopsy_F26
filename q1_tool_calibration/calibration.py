@@ -8,9 +8,9 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from ._validation import points3, unit_vector, vector3
-from .geometry import direction_error_degrees, fit_plane
-from .registration import register_rigid
+from utils._validation import points3, unit_vector, vector3
+from utils.geometry import direction_error_degrees, fit_plane
+from q2_registration.registration import register_rigid
 
 
 @dataclass(frozen=True)

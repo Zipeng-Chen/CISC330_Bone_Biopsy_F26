@@ -1,53 +1,24 @@
-"""Print and verify the required cases and the clarified Figure 6 error metric.
+"""Check planning cases, the combined calculation, and the Figure 6 metric."""
 
-Run from the repository root: python -m examples.run_required_cases
-All positions and distances are in mm; Figure 2 model coordinates start in cm.
-"""
+from pathlib import Path
+import sys
+
+# Allow both python -m and direct execution from another working directory.
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import numpy as np
 from numpy.testing import assert_allclose
 
-from bone_biopsy import (
-    assignment_tool_model, distance_point_to_line, plan_biopsy, register_tool,
-)
+from bone_biopsy import assignment_tool_model, distance_point_to_line, plan_biopsy, register_tool
+from q2_registration.cases import REGISTRATION_CASES
+from utils.reporting import run_tests, run_with_log
+
+OUTPUTS = Path(__file__).resolve().parent / "outputs"
 
 
-def vector_text(values):
-    # Roundoff is suppressed for readability; assertions use unrounded results
-    return "(" + ", ".join(f"{float(x):.6f}" for x in values) + ")"
-
-
-def main():
-    # Convert the confirmed Figure 2 centimetres to millimetres once.
-    model = assignment_tool_model()
-    print("ASSIGNMENT VALIDATION: positions and distances in mm")
-    print("Figure 2 coordinates are cm; the model uses 10 mm per cm.")
-    print("Predictions are independent analytic fixtures; tolerance = 1e-12.")
-    print()
-    print("REGISTRATION")
-    # Use explicit marker coordinates from the analytic predictions
-    cases = [
-        ("translation", [[30, 175, 2], [90, 175, 2], [30, 235, 2]],
-         [10, -5, 2], [0, -1, 0]),
-        ("rotation", [[-180, 20, 0], [-180, 80, 0], [-240, 20, 0]],
-         [0, 0, 0], [1, 0, 0]),
-        ("rotation + translation", [[-170, 15, 2], [-170, 75, 2], [-230, 15, 2]],
-         [10, -5, 2], [1, 0, 0]),
-    ]
-    last_tool = None
-    for name, markers, expected_tip, expected_axis in cases:
-        tool = register_tool(model.markers, markers, model.tip, model.axis)
-        # Compare full-precision results before formatting them for display
-        assert_allclose(tool.tip, expected_tip, atol=1e-12, rtol=0)
-        assert_allclose(tool.axis, expected_axis, atol=1e-12, rtol=0)
-        print(f"{name}:")
-        print(f"  tip  expected {vector_text(expected_tip)}; computed {vector_text(tool.tip)}")
-        print(f"  axis expected {vector_text(expected_axis)}; computed {vector_text(tool.axis)}")
-        print(f"  tip difference norm: {np.linalg.norm(tool.tip - expected_tip):.3e} mm")
-        print(f"  axis difference norm: {np.linalg.norm(tool.axis - expected_axis):.3e}")
-        last_tool = tool
-
-    print()
+def run():
+    print("All positions and distances are in mm; comparisons use tolerance 1e-12.")
     print("PLANNING: sphere center (0,0,0), radius 1, direction (0,0,1)")
     # Use a unit sphere to test intersection, tangency, and a complete miss
     plan_cases = [
@@ -72,6 +43,9 @@ def main():
     print()
     print("COMBINED REGISTRATION -> PLANNING")
     # A 3 mm offset in a 5 mm sphere gives an 8 mm chord at 100 mm axial depth
+    model = assignment_tool_model()
+    markers = REGISTRATION_CASES[-1][1]
+    last_tool = register_tool(model.markers, markers, model.tip, model.axis)
     plan = plan_biopsy(last_tool.tip, last_tool.axis, [110, -2, 2], 5)
     actual = [plan.targeting_error, plan.entry_depth,
               plan.tissue_core_length, plan.insertion_depth]
@@ -98,6 +72,11 @@ def main():
     print(f"  endpoint distance, for comparison only: {endpoint_distance:.6f} mm")
     print()
     print("PASS: required examples, combined case, and Figure 6 metric agree.")
+    run_tests("q3_biopsy_plan.test_planning", OUTPUTS / "test_report.txt")
+
+
+def main():
+    run_with_log(run, OUTPUTS / "run_log.txt", "python -m q3_biopsy_plan.run")
 
 
 if __name__ == "__main__":

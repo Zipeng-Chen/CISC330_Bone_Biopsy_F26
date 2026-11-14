@@ -1,0 +1,26 @@
+Run date: 2026-11-14
+Command: python -m q2_registration.run
+
+ASSIGNMENT VALIDATION: positions and distances in mm
+Figure 2 coordinates are cm; the model uses 10 mm per cm.
+Predictions are independent analytic fixtures; tolerance = 1e-12.
+
+REGISTRATION
+translation:
+  tip  expected (10.000000, -5.000000, 2.000000); computed (10.000000, -5.000000, 2.000000)
+  axis expected (0.000000, -1.000000, 0.000000); computed (0.000000, -1.000000, 0.000000)
+  tip difference norm: 7.653e-14 mm
+  axis difference norm: 2.782e-16
+rotation:
+  tip  expected (0.000000, 0.000000, 0.000000); computed (-0.000000, -0.000000, 0.000000)
+  axis expected (1.000000, 0.000000, 0.000000); computed (1.000000, -0.000000, 0.000000)
+  tip difference norm: 6.071e-14 mm
+  axis difference norm: 1.564e-16
+rotation + translation:
+  tip  expected (10.000000, -5.000000, 2.000000); computed (10.000000, -5.000000, 2.000000)
+  axis expected (1.000000, 0.000000, 0.000000); computed (1.000000, -0.000000, 0.000000)
+  tip difference norm: 6.071e-14 mm
+  axis difference norm: 1.564e-16
+
+PASS: translation, rotation, and combined registration agree.
+PASS: 12 unit tests; details in outputs/test_report.txt

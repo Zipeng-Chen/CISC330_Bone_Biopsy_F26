@@ -1,0 +1,27 @@
+test_degenerate_plane_is_rejected (q1_tool_calibration.test_calibration.GeometryTests.test_degenerate_plane_is_rejected) ... ok
+test_direction_error_preserves_axis_sign (q1_tool_calibration.test_calibration.GeometryTests.test_direction_error_preserves_axis_sign) ... ok
+test_invalid_rotation_inputs (q1_tool_calibration.test_calibration.GeometryTests.test_invalid_rotation_inputs) ... ok
+test_plane_recovers_independently_defined_normal (q1_tool_calibration.test_calibration.GeometryTests.test_plane_recovers_independently_defined_normal) ... ok
+test_right_handed_rotation (q1_tool_calibration.test_calibration.GeometryTests.test_right_handed_rotation) ... ok
+test_empirical_radial_probability_and_coordinate_independence (q1_tool_calibration.test_calibration.MarkerNoiseTests.test_empirical_radial_probability_and_coordinate_independence) ... ok
+test_invalid_noise_parameters (q1_tool_calibration.test_calibration.MarkerNoiseTests.test_invalid_noise_parameters) ... ok
+test_noise_is_reproducible_and_does_not_modify_inputs (q1_tool_calibration.test_calibration.MarkerNoiseTests.test_noise_is_reproducible_and_does_not_modify_inputs) ... ok
+test_sigma_uses_three_dimensional_radial_quantile (q1_tool_calibration.test_calibration.MarkerNoiseTests.test_sigma_uses_three_dimensional_radial_quantile) ... ok
+test_axis_sign_requires_tip_separation (q1_tool_calibration.test_calibration.ToolCalibrationTests.test_axis_sign_requires_tip_separation) ... ok
+test_calibration_flows_into_existing_registration_and_planning (q1_tool_calibration.test_calibration.ToolCalibrationTests.test_calibration_flows_into_existing_registration_and_planning) ... ok
+test_exact_assignment_model_is_recovered (q1_tool_calibration.test_calibration.ToolCalibrationTests.test_exact_assignment_model_is_recovered) ... ok
+test_independent_pivot_fixture_recovers_nonzero_tip (q1_tool_calibration.test_calibration.ToolCalibrationTests.test_independent_pivot_fixture_recovers_nonzero_tip) ... ok
+test_invalid_simulation_setup_is_rejected (q1_tool_calibration.test_calibration.ToolCalibrationTests.test_invalid_simulation_setup_is_rejected) ... ok
+test_malformed_observations_are_rejected (q1_tool_calibration.test_calibration.ToolCalibrationTests.test_malformed_observations_are_rejected) ... ok
+test_noisy_calibration_is_repeatable_and_has_finite_nonzero_errors (q1_tool_calibration.test_calibration.ToolCalibrationTests.test_noisy_calibration_is_repeatable_and_has_finite_nonzero_errors) ... ok
+test_nonzero_tip_and_oblique_model_axis_are_recovered (q1_tool_calibration.test_calibration.ToolCalibrationTests.test_nonzero_tip_and_oblique_model_axis_are_recovered) ... ok
+test_on_axis_marker_can_be_ignored (q1_tool_calibration.test_calibration.ToolCalibrationTests.test_on_axis_marker_can_be_ignored) ... ok
+test_simulated_pivot_keeps_tip_fixed_and_excites_multiple_axes (q1_tool_calibration.test_calibration.ToolCalibrationTests.test_simulated_pivot_keeps_tip_fixed_and_excites_multiple_axes) ... ok
+test_simulated_spin_keeps_axis_fixed_and_markers_on_circles (q1_tool_calibration.test_calibration.ToolCalibrationTests.test_simulated_spin_keeps_axis_fixed_and_markers_on_circles) ... ok
+test_stationary_spin_is_rejected (q1_tool_calibration.test_calibration.ToolCalibrationTests.test_stationary_spin_is_rejected) ... ok
+test_unobservable_pivot_is_rejected (q1_tool_calibration.test_calibration.ToolCalibrationTests.test_unobservable_pivot_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 0.127s
+
+OK
