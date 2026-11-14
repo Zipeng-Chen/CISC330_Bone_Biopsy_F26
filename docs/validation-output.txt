@@ -1,0 +1,80 @@
+A2 validation output
+Run date: 2026-11-14
+All commands run from the repository root.
+
+$ python -m examples.run_required_cases
+ASSIGNMENT VALIDATION: positions and distances in mm
+Figure 2 coordinates are cm; the model uses 10 mm per cm.
+Predictions are independent analytic fixtures; tolerance = 1e-12.
+
+REGISTRATION
+translation:
+  tip  expected (10.000000, -5.000000, 2.000000); computed (10.000000, -5.000000, 2.000000)
+  axis expected (0.000000, -1.000000, 0.000000); computed (0.000000, -1.000000, 0.000000)
+  tip difference norm: 7.653e-14 mm
+  axis difference norm: 2.782e-16
+rotation:
+  tip  expected (0.000000, 0.000000, 0.000000); computed (-0.000000, -0.000000, 0.000000)
+  axis expected (1.000000, 0.000000, 0.000000); computed (1.000000, -0.000000, 0.000000)
+  tip difference norm: 6.071e-14 mm
+  axis difference norm: 1.564e-16
+rotation + translation:
+  tip  expected (10.000000, -5.000000, 2.000000); computed (10.000000, -5.000000, 2.000000)
+  axis expected (1.000000, 0.000000, 0.000000); computed (1.000000, -0.000000, 0.000000)
+  tip difference norm: 6.071e-14 mm
+  axis difference norm: 1.564e-16
+
+PLANNING: sphere center (0,0,0), radius 1, direction (0,0,1)
+intersects: (error, core, insertion/contact depth)
+  expected (0.0, 2.0, 4.0); computed (0.0, 2.0, 4.0)
+tangent: (error, core, insertion/contact depth)
+  expected (1.0, 0.0, 3.0); computed (1.0, 0.0, 3.0)
+miss: (error, core, insertion/contact depth)
+  expected (2.0, 0.0, None); computed (2.0, 0.0, None)
+
+COMBINED REGISTRATION -> PLANNING
+  (error, entry depth, core length, insertion depth)
+  expected [3.0, 96.0, 8.0, 104.0]; computed [3.000000000000037, 96.00000000000009, 7.999999999999943, 104.00000000000003]
+
+FIGURE 6 METRIC: displaced target to actual needle axis
+  perpendicular targeting error: 3.000000 mm (expected 3)
+  endpoint distance, for comparison only: 5.000000 mm
+
+PASS: required examples, combined case, and Figure 6 metric agree.
+
+$ python -m examples.run_calibration --trials 500 --poses 60 --seed 2026 --output docs/calibration-results.json
+CALIBRATION: Figure 2 cm converted to mm
+Poses: 60 pivot + 60 spin; noisy trials: 500
+Marker sigma per coordinate: 0.357719874 mm
+
+HAND-CALCULATED CHECKS (worked derivations in docs/report.md):
+  tip expected [1, 2, 3]; computed [1. 2. 3.] mm
+  pivot expected [10, 20, 30]; computed [10. 20. 30.] mm
+  tip difference: 6.877e-14 mm
+  axis expected [0, -1, 0]; computed [-1.40128078e-16 -1.00000000e+00  0.00000000e+00]
+  axis difference: 8.029e-15 degrees
+
+exact:
+  tip (mm): [ 2.16276974e-14 -7.10542736e-15 -7.36001967e-16]
+  axis: [ 5.32704667e-18 -1.00000000e+00 -2.47848617e-17]
+  tip error: 2.27768763e-14 mm
+  axis error: 1.45249807e-15 degrees
+
+first_noisy_trial:
+  tip (mm): [ 0.09751964  0.11974373 -0.02350761]
+  axis: [ 6.28276047e-05 -9.99999278e-01 -1.20042878e-03]
+  tip error: 0.156208994 mm
+  axis error: 0.0688736561 degrees
+
+Repeated noisy calibration:
+  tip_error_mm: mean=0.419917, median=0.390112, rms=0.465978, p95=0.797692, maximum=1.184480
+  axis_error_degrees: mean=0.064259, median=0.059526, rms=0.072717, p95=0.124624, maximum=0.181567
+Marker errors below 1 mm: 95.0439%
+PASS: exact calibration and calibrated registration/planning match predictions.
+Saved results: docs\calibration-results.json
+
+$ python -m unittest discover -s tests -q
+----------------------------------------------------------------------
+Ran 63 tests in 0.144s
+
+OK
