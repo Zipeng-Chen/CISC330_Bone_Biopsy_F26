@@ -22,6 +22,7 @@ this question's unit tests. It saves the console output and test details in
 | File | Purpose |
 | --- | --- |
 | [README.md](README.md) | Method, hand calculations, computed results, and interpretation |
+| [transcript.md](transcript.md) | Summary of the development discussion |
 | [registration.py](registration.py) | Rigid registration and transformation of the tip and axis |
 | [cases.py](cases.py) | Literal marker inputs and hand-predicted answers for the three cases |
 | [run.py](run.py) | Prints and checks the three required transformations |

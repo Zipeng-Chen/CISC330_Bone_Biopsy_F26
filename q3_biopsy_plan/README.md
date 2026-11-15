@@ -22,6 +22,7 @@ this question's unit tests. It saves the console output and test details in
 | File | Purpose |
 | --- | --- |
 | [README.md](README.md) | Method, hand calculations, computed results, and interpretation |
+| [transcript.md](transcript.md) | Student/Chatbot discussion of targeting distance and forward biopsy planning |
 | [planning.py](planning.py) | Point-to-axis distance, sphere intersections, and forward insertion |
 | [run.py](run.py) | Three path cases, combined Q2/Q3 calculation, and Figure 6 distance check |
 | [test_planning.py](test_planning.py) | 26 tests for planning geometry, boundary cases, and invalid inputs |

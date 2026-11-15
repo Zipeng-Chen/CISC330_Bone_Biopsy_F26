@@ -23,6 +23,7 @@ this question's unit tests. It saves the console output and test details in
 | File | Purpose |
 | --- | --- |
 | [README.md](README.md) | Method, hand calculations, computed results, and interpretation |
+| [transcript.md](transcript.md) | Summary of the development discussion |
 | [calibration.py](calibration.py) | Pivot and spin calibration solvers; uses Q2's registration |
 | [motions.py](motions.py) | Constrained pivot and spin observations |
 | [run.py](run.py) | Hand examples, exact calibration, 500 noisy trials, and integration check |
