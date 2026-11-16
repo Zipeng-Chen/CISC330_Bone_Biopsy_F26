@@ -1,0 +1,345 @@
+{
+  "configuration": {
+    "primary_trials_per_sigma": 10000,
+    "combined_trials_per_sigma": 0,
+    "random_seed": 2026,
+    "length_unit": "mm",
+    "insertion_depth_mm": 100.0,
+    "target_tolerance_mm": 3.0,
+    "required_success_probability": 0.95,
+    "tracker_sigma_per_coordinate_mm": 0.3577198742584623,
+    "tracker_radial_bound_mm": 1.0,
+    "tracker_radial_probability": 0.95,
+    "procedural_sigma_values_mm": [
+      0.0,
+      0.25,
+      0.5,
+      0.75,
+      1.0,
+      1.25,
+      1.5,
+      1.75,
+      2.0,
+      2.25,
+      2.5,
+      2.75,
+      3.0
+    ],
+    "calibration_poses_per_motion": 60
+  },
+  "ideal_scene": {
+    "model_markers_mm": [
+      [
+        20.0,
+        180.0,
+        0.0
+      ],
+      [
+        80.0,
+        180.0,
+        0.0
+      ],
+      [
+        20.0,
+        240.0,
+        0.0
+      ]
+    ],
+    "ct_markers_mm": [
+      [
+        20.0,
+        180.0,
+        0.0
+      ],
+      [
+        80.0,
+        180.0,
+        0.0
+      ],
+      [
+        20.0,
+        240.0,
+        0.0
+      ]
+    ],
+    "tool_tip_mm": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "tool_axis": [
+      0.0,
+      -1.0,
+      0.0
+    ],
+    "planned_target_mm": [
+      0.0,
+      -100.0,
+      0.0
+    ],
+    "exact_targeting_error_mm": 9.88720820448563e-14
+  },
+  "baseline_sigma_zero": {
+    "procedural_sigma_mm": 0.0,
+    "registration_only": {
+      "trials": 10000,
+      "mean_mm": 2.717019494408044,
+      "median_mm": 2.5001830489777808,
+      "rms_mm": 3.1195073846562504,
+      "p95_mm": 5.569378189906262,
+      "maximum_mm": 10.96919574375583,
+      "successes": 6266,
+      "success_probability": 0.6266,
+      "success_ci95_lower": 0.6170725990124332,
+      "success_ci95_upper": 0.6360301726001115,
+      "meets_requirement": false,
+      "conservatively_meets_requirement": false
+    },
+    "combined_uncertainty": null
+  },
+  "sigma_sweep": [
+    {
+      "procedural_sigma_mm": 0.0,
+      "registration_only": {
+        "trials": 10000,
+        "mean_mm": 2.717019494408044,
+        "median_mm": 2.5001830489777808,
+        "rms_mm": 3.1195073846562504,
+        "p95_mm": 5.569378189906262,
+        "maximum_mm": 10.96919574375583,
+        "successes": 6266,
+        "success_probability": 0.6266,
+        "success_ci95_lower": 0.6170725990124332,
+        "success_ci95_upper": 0.6360301726001115,
+        "meets_requirement": false,
+        "conservatively_meets_requirement": false
+      },
+      "combined_uncertainty": null
+    },
+    {
+      "procedural_sigma_mm": 0.25,
+      "registration_only": {
+        "trials": 10000,
+        "mean_mm": 2.736347533807081,
+        "median_mm": 2.520429971215087,
+        "rms_mm": 3.138207215329401,
+        "p95_mm": 5.586123048249336,
+        "maximum_mm": 10.881510736174137,
+        "successes": 6225,
+        "success_probability": 0.6225,
+        "success_ci95_lower": 0.6129535165389347,
+        "success_ci95_upper": 0.6319524038602496,
+        "meets_requirement": false,
+        "conservatively_meets_requirement": false
+      },
+      "combined_uncertainty": null
+    },
+    {
+      "procedural_sigma_mm": 0.5,
+      "registration_only": {
+        "trials": 10000,
+        "mean_mm": 2.7927136170848765,
+        "median_mm": 2.567852197362673,
+        "rms_mm": 3.1959217704328338,
+        "p95_mm": 5.6855519797540195,
+        "maximum_mm": 10.797190984727152,
+        "successes": 6066,
+        "success_probability": 0.6066,
+        "success_ci95_lower": 0.5969863086079082,
+        "success_ci95_upper": 0.6161318229394636,
+        "meets_requirement": false,
+        "conservatively_meets_requirement": false
+      },
+      "combined_uncertainty": null
+    },
+    {
+      "procedural_sigma_mm": 0.75,
+      "registration_only": {
+        "trials": 10000,
+        "mean_mm": 2.8828163003652034,
+        "median_mm": 2.6593252513870675,
+        "rms_mm": 3.290598825756182,
+        "p95_mm": 5.829872150415229,
+        "maximum_mm": 10.941940722419924,
+        "successes": 5828,
+        "success_probability": 0.5828,
+        "success_ci95_lower": 0.5731054945384564,
+        "success_ci95_upper": 0.5924309153313596,
+        "meets_requirement": false,
+        "conservatively_meets_requirement": false
+      },
+      "combined_uncertainty": null
+    },
+    {
+      "procedural_sigma_mm": 1.0,
+      "registration_only": {
+        "trials": 10000,
+        "mean_mm": 3.0025656252228976,
+        "median_mm": 2.788842771419838,
+        "rms_mm": 3.419169275477566,
+        "p95_mm": 5.994208177976133,
+        "maximum_mm": 11.217616375392836,
+        "successes": 5504,
+        "success_probability": 0.5504,
+        "success_ci95_lower": 0.540632592834002,
+        "success_ci95_upper": 0.5601287001302339,
+        "meets_requirement": false,
+        "conservatively_meets_requirement": false
+      },
+      "combined_uncertainty": null
+    },
+    {
+      "procedural_sigma_mm": 1.25,
+      "registration_only": {
+        "trials": 10000,
+        "mean_mm": 3.14869303174885,
+        "median_mm": 2.9306203009448444,
+        "rms_mm": 3.577981228239187,
+        "p95_mm": 6.25656649528289,
+        "maximum_mm": 11.495221299781313,
+        "successes": 5160,
+        "success_probability": 0.516,
+        "success_ci95_lower": 0.506200933743386,
+        "success_ci95_upper": 0.5257867783087523,
+        "meets_requirement": false,
+        "conservatively_meets_requirement": false
+      },
+      "combined_uncertainty": null
+    },
+    {
+      "procedural_sigma_mm": 1.5,
+      "registration_only": {
+        "trials": 10000,
+        "mean_mm": 3.317625035293112,
+        "median_mm": 3.087949905440428,
+        "rms_mm": 3.7632079450722116,
+        "p95_mm": 6.540018764839491,
+        "maximum_mm": 12.234196931376301,
+        "successes": 4803,
+        "success_probability": 0.4803,
+        "success_ci95_lower": 0.47051723157810804,
+        "success_ci95_upper": 0.4900978979576965,
+        "meets_requirement": false,
+        "conservatively_meets_requirement": false
+      },
+      "combined_uncertainty": null
+    },
+    {
+      "procedural_sigma_mm": 1.75,
+      "registration_only": {
+        "trials": 10000,
+        "mean_mm": 3.505666140863867,
+        "median_mm": 3.260914307440938,
+        "rms_mm": 3.971154950267947,
+        "p95_mm": 6.901464101778464,
+        "maximum_mm": 13.108066939083637,
+        "successes": 4459,
+        "success_probability": 0.4459,
+        "success_ci95_lower": 0.43618033623290137,
+        "success_ci95_upper": 0.45566121239080576,
+        "meets_requirement": false,
+        "conservatively_meets_requirement": false
+      },
+      "combined_uncertainty": null
+    },
+    {
+      "procedural_sigma_mm": 2.0,
+      "registration_only": {
+        "trials": 10000,
+        "mean_mm": 3.7097248650588126,
+        "median_mm": 3.4713862334325913,
+        "rms_mm": 4.198447626585454,
+        "p95_mm": 7.273306688047285,
+        "maximum_mm": 13.982034367512263,
+        "successes": 4089,
+        "success_probability": 0.4089,
+        "success_ci95_lower": 0.39930098342921183,
+        "success_ci95_upper": 0.41856898107392526,
+        "meets_requirement": false,
+        "conservatively_meets_requirement": false
+      },
+      "combined_uncertainty": null
+    },
+    {
+      "procedural_sigma_mm": 2.25,
+      "registration_only": {
+        "trials": 10000,
+        "mean_mm": 3.9278198541028453,
+        "median_mm": 3.6801347496370846,
+        "rms_mm": 4.442117348774661,
+        "p95_mm": 7.668179603932284,
+        "maximum_mm": 14.856082023201377,
+        "successes": 3701,
+        "success_probability": 0.3701,
+        "success_ci95_lower": 0.3606882489459404,
+        "success_ci95_upper": 0.3796115138307612,
+        "meets_requirement": false,
+        "conservatively_meets_requirement": false
+      },
+      "combined_uncertainty": null
+    },
+    {
+      "procedural_sigma_mm": 2.5,
+      "registration_only": {
+        "trials": 10000,
+        "mean_mm": 4.158337198511285,
+        "median_mm": 3.8955914935677054,
+        "rms_mm": 4.699617414252891,
+        "p95_mm": 8.124941780939446,
+        "maximum_mm": 15.730196532684408,
+        "successes": 3399,
+        "success_probability": 0.3399,
+        "success_ci95_lower": 0.33067919813078656,
+        "success_ci95_upper": 0.3492437581475039,
+        "meets_requirement": false,
+        "conservatively_meets_requirement": false
+      },
+      "combined_uncertainty": null
+    },
+    {
+      "procedural_sigma_mm": 2.75,
+      "registration_only": {
+        "trials": 10000,
+        "mean_mm": 4.399038791536415,
+        "median_mm": 4.123001369391925,
+        "rms_mm": 4.968798081364709,
+        "p95_mm": 8.56720498960801,
+        "maximum_mm": 16.60436733768145,
+        "successes": 3091,
+        "success_probability": 0.3091,
+        "success_ci95_lower": 0.30011731353368415,
+        "success_ci95_upper": 0.31822929704424,
+        "meets_requirement": false,
+        "conservatively_meets_requirement": false
+      },
+      "combined_uncertainty": null
+    },
+    {
+      "procedural_sigma_mm": 3.0,
+      "registration_only": {
+        "trials": 10000,
+        "mean_mm": 4.648178766103502,
+        "median_mm": 4.351417549991911,
+        "rms_mm": 5.247862244701038,
+        "p95_mm": 9.074445846655161,
+        "maximum_mm": 17.478585991533894,
+        "successes": 2807,
+        "success_probability": 0.2807,
+        "success_ci95_lower": 0.27197857365203726,
+        "success_ci95_upper": 0.2895898480333414,
+        "meets_requirement": false,
+        "conservatively_meets_requirement": false
+      },
+      "combined_uncertainty": null
+    }
+  ],
+  "maximum_tolerable_sigma_mm": {
+    "registration_only": null,
+    "combined_uncertainty": null
+  },
+  "maximum_conservative_sigma_mm": {
+    "registration_only": null,
+    "combined_uncertainty": null
+  },
+  "interpretation": "Tracker localization noise remains fixed throughout the experiment. Only procedural target displacement sigma is varied. The primary experiment assumes exact tool calibration. The optional combined experiment also includes noisy Q1 calibration. The experiments may have different trial counts. A null maximum indicates that no tested sigma satisfies the clinical criterion. Threshold estimates are limited to the tested grid."
+}
