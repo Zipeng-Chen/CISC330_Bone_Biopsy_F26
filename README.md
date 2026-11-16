@@ -130,6 +130,8 @@ direction, it is `u = R v`. Translation moves a position but cannot change the
 direction of a line. The arrays store points as rows, so the equivalent code
 for several points is `points @ R.T + t`.
 
+For Q4, the tool model and CT coordinate frames are assumed to coincide, as specified in the assignment. The ideal tool tip is at (0, 0, 0) mm, with the needle axis pointing along (0, -1, 0). At an insertion depth of 100 mm, the planned target is therefore located at (0, -100, 0) mm. Gaussian marker-localization noise is applied in the CT frame, while independent target displacement is added to the planned target position. All targeting errors and displacement values are expressed in mm.
+
 ## Limitations
 
 The exact cases check whether the geometry and frame transformations are
