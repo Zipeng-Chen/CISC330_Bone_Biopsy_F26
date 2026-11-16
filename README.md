@@ -75,7 +75,9 @@ The question READMEs explain every file in their folders. Shared files are:
 | [requirements.txt](requirements.txt) | NumPy dependency for calculations and tests |
 | [requirements-plots.txt](requirements-plots.txt) | Optional Matplotlib dependency for calibration figures |
 | [.gitignore](.gitignore) | Excludes local environments, caches, and compiled Python files |
-
+| [q4_targeting_error/simulation.py](q4_targeting_error/simulation.py) | Monte Carlo simulation of tracker localization error, target displacement, and compound targeting error |
+| [q4_targeting_error/run.py](q4_targeting_error/run.py) | Runs the procedural sigma sweep, summarizes targeting success, and saves results |
+| [q4_targeting_error/outputs/](q4_targeting_error/outputs/) | Generated JSON and CSV results for the targeting-error simulation |
 ## How the parts connect
 
 Calibration finds the tip and axis relative to the tool markers. Registration
