@@ -9,12 +9,12 @@ Simulate how CT marker-localization uncertainty and procedural target displaceme
 From the repository root:
 
 ```bash
-python -m q4_targeting_error.run --trials 10000 --combined-trials 0 --step 0.25
+python -m q4_targeting_error.run --trials 10000 --combined-trials 500 --step 0.25 --seed 2026
 ```
 
-The runner performs 10,000 Monte Carlo trials for each procedural standard deviation from 0 to 3.0 mm, in increments of 0.25 mm. It prints the targeting-error statistics, evaluates the clinical success requirement, and saves the results in `outputs/`.
+The runner performs 10,000 primary trials and 500 combined trials for each procedural standard deviation from 0 to 3.0 mm, in increments of 0.25 mm. It prints the targeting-error statistics, evaluates the clinical success requirement, and saves the results in `outputs/`.
 
-The primary experiment assumes exact tool calibration. The optional combined experiment also includes noisy Q1 calibration, but it is disabled in the command above.
+The primary experiment assumes exact tool calibration. The combined experiment also includes noisy Q1 calibration and is included in the saved results. To run only the primary experiment, use `--combined-trials 0`; this replaces the output files with primary-only results unless a different `--output-dir` is supplied.
 
 ## File guide
 
@@ -23,6 +23,8 @@ The primary experiment assumes exact tool calibration. The optional combined exp
 | [README.md](README.md) | Simulation methodology, mathematical model, results, and interpretation |
 | [simulation.py](simulation.py) | Ideal scene, Gaussian uncertainty, Monte Carlo trials, and statistical analysis |
 | [run.py](run.py) | Runs the sigma sweep, summarizes clinical success, and exports results |
+| [test_targeting_error.py](test_targeting_error.py) | Twelve checks of units, hand-calculated geometry, noise propagation, calibration inputs, and statistics |
+| [__init__.py](__init__.py) | Makes Q4 importable and enables automatic test discovery |
 | [outputs/targeting-results.json](outputs/targeting-results.json) | Simulation configuration, baseline statistics, sigma sweep, and clinical threshold results |
 | [outputs/targeting-sigma-sweep.csv](outputs/targeting-sigma-sweep.csv) | Tabular targeting-error statistics for each procedural sigma |
 
@@ -77,7 +79,7 @@ Sigma per coordinate:         0.357719874 mm
 
 This distinction is important: the 1.0 mm requirement describes the magnitude of the three-dimensional error, not the standard deviation of each coordinate.
 
-As an independent check, 100,000 Gaussian noise samples were generated using the calculated standard deviation. Approximately **95.02%** of the resulting marker-position errors were within 1.0 mm, matching the specified tracker accuracy.
+The shared noise model is checked by Q1's `test_empirical_radial_probability_and_coordinate_independence`, using 100,000 samples with seed 41. It checks that the fraction within 1.0 mm is within 0.003 of 0.95, and also checks coordinate means and covariance. Q4's tests separately check that the simulation uses the expected tracker sigma.
 
 ## Compound targeting error
 
@@ -152,11 +154,13 @@ The primary experiment uses the following configuration:
 | Procedural sigma increment | 0.25 mm |
 | Trials per sigma | 10,000 |
 | Random seed | 2026 |
-| Combined calibration trials | 0 |
+| Combined calibration trials per sigma | 500 |
 
 The procedural sigma sweep contains 13 values, including the zero-displacement baseline.
 
 At each value, the simulation repeats the registration and targeting-error calculation using randomly generated marker-localization errors and target displacements.
+
+Trials are independent within each sigma level. The random generator restarts with the same seed at the next level, reusing the same underlying draws across levels. This helps compare the effect of changing sigma, but the 13 levels are not 13 independent experiments that can be pooled for a smaller confidence interval.
 
 ## Results
 
@@ -199,6 +203,32 @@ The estimated 95% confidence interval for the baseline success probability was a
 
 Although the mean targeting error is below 3.0 mm, this does not imply that the clinical requirement is satisfied. The requirement concerns the proportion of trials within the tolerance, not the average targeting error.
 
+Small marker errors can produce a larger miss because the target is far from the marker cluster. Its centroid is `(40,200,0)` mm, while the target is `(0,-100,0)` mm: their separation is about 303 mm. Rotation uncertainty around the cluster therefore has a long distance over which to affect the needle trajectory. For scale, a 1-degree orientation error over 300 mm corresponds to about `300*sin(1 degree) = 5.24` mm of lateral displacement. This is an illustration of sensitivity, not a prediction that every trial has a 1-degree error. The 1 mm tracker bound applies at the markers, not at the target.
+
+### Combined calibration experiment
+
+The saved combined run uses fresh independent noise on 60 pivot and 60 spin observations in each trial. Q1 estimates the tip and axis from those observations, and Q2 registers those estimated values using noisy CT markers. The target displacement is independent of both sets of marker noise.
+
+| Procedural sigma (mm) | Combined 95th-percentile error (mm) | Combined success probability |
+| ---: | ---: | ---: |
+| 0.00 | 5.838 | 61.40% |
+| 0.25 | 5.955 | 58.40% |
+| 0.50 | 6.094 | 56.00% |
+| 0.75 | 6.106 | 55.00% |
+| 1.00 | 6.281 | 50.60% |
+| 1.25 | 6.466 | 48.00% |
+| 1.50 | 6.721 | 45.40% |
+| 1.75 | 7.181 | 41.60% |
+| 2.00 | 7.610 | 38.20% |
+| 2.25 | 7.904 | 35.20% |
+| 2.50 | 8.505 | 32.40% |
+| 2.75 | 8.893 | 29.20% |
+| 3.00 | 9.252 | 27.40% |
+
+At sigma zero, 307 of 500 combined trials succeed. The mean error is 2.820 mm and the 95% Wilson interval for success is 57.06% to 65.56%. This is much wider than the primary interval because the combined sample is smaller. Neither baseline comes close to the required 95% success rate.
+
+The reported 61.40% and 62.66% rates are separate estimates, not a matched estimate of the effect of calibration. Although `simulate_paired()` computes matched primary and combined errors internally, the command-line runner retains only its combined array and reports a separate 10,000-trial primary run. The difference between the reported rates cannot be attributed entirely to calibration. A precise comparison would retain both paired arrays and use a larger combined sample. These results support the same failure of the clinical requirement, but do not measure a precise calibration penalty.
+
 ### Effect of increasing procedural uncertainty
 
 Increasing procedural sigma generally increases the targeting error and decreases the probability of remaining within the clinical tolerance.
@@ -234,7 +264,7 @@ The output JSON records this result as:
 
 For the primary experiment, `null` indicates that no tested procedural sigma satisfies the clinical requirement.
 
-The combined experiment was not run in this configuration, so its `null` value indicates that no combined-experiment threshold was evaluated.
+The combined experiment also ran and failed at every tested sigma, so its `null` value has the same meaning. If `--combined-trials 0` is used instead, a combined `null` means that the combined experiment was not evaluated; check the configuration to distinguish the two cases.
 
 Because the baseline success probability is already below 95%, reducing procedural displacement alone cannot resolve the observed baseline targeting inaccuracy.
 
@@ -242,13 +272,19 @@ Because the baseline success probability is already below 95%, reducing procedur
 
 The ideal-scene calculation produced a targeting error of approximately `9.887e-14` mm, confirming that the noise-free needle trajectory passes through the planned target.
 
-A separate rigid-registration test using a known rotation and translation produced a tool-tip error of approximately `8.789e-14` mm and a needle-axis direction error of approximately `1.594e-16`. These results are effectively zero and support the correctness of the rigid transformation.
+Run the 12 Q4-specific tests from the repository root:
 
-The tracker noise model was independently checked using 100,000 samples, with 95.02% of marker-position errors falling within the required 1.0 mm bound.
+```bash
+python -m unittest q4_targeting_error.test_targeting_error -v
+```
+
+The tests include two hand-calculated cases: a 3 mm sideways shift must give a 3 mm perpendicular error even when the endpoint distance is 5 mm; a 1-degree tilt at 100 mm depth must give `100*sin(1 degree) = 1.745240644` mm. They also check that tracker noise remains active at zero procedural sigma, calibrated tip and axis errors reach the combined result, and success counts and confidence intervals are correct.
+
+The [verification explanation](../verification/README.md#q4-hand-calculations-and-test-coverage) gives the predictions and purpose of all 12 tests, including an independent target-only probability check. [Saved test results](../verification/all_tests.txt) record their outcomes. These tests are also included in `python -m verification.run_all`; they do not overwrite the Q4 simulation outputs. Q2's tests cover known rigid transformations, and Q1's tests check the shared tracker noise distribution.
 
 The simulation assumes rigid tool markers, exact ground-truth geometry, independent zero-mean Gaussian errors, and a fixed 100 mm insertion depth. The primary experiment also assumes exact tool calibration, so noisy calibration uncertainty from Q1 is not included in the reported primary results.
 
-The optional combined experiment can incorporate calibration uncertainty, but it was disabled for this recorded run.
+The saved combined experiment includes calibration uncertainty with 500 trials per sigma. Its smaller sample supports a broad comparison with the requirement, rather than a precise estimate of how much calibration adds to the primary error.
 
 The model does not simulate needle bending, tissue deformation beyond the randomized target displacement, correlated tracking errors, or changes in insertion depth and tissue-core length. Its results therefore describe the specified mathematical uncertainty model rather than a complete clinical procedure.
 

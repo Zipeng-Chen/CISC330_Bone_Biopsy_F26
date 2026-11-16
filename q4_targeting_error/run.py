@@ -11,7 +11,7 @@ Quick test:
 
 Main experiment:
 
-    python -m q4_targeting_error.run --trials 10000 --combined-trials 0 --step 0.25
+    python -m q4_targeting_error.run --trials 10000 --combined-trials 500 --step 0.25 --seed 2026
 
 Primary experiment uses exact tool calibration and noisy CT marker
 registration. Optional combined experiment additionally includes
@@ -78,7 +78,7 @@ def maximum_tolerable_sigma(
 
 # Results saving 
 def save_json(report, path):
-    """Saves complete experimentreport as JSON."""
+    """Save the complete experiment report as JSON."""
 
     path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -614,7 +614,7 @@ def main():
     baseline = report["baseline_sigma_zero"]
 
     print(
-        "\nTRACKER-ONLY BASELINE "
+        "\nZERO TARGET-DISPLACEMENT BASELINE "
         "(PROCEDURAL SIGMA = 0)"
     )
 

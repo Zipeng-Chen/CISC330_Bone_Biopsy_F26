@@ -156,6 +156,6 @@ The three cross-question checks are in
 [verification/test_integration.py](../verification/test_integration.py).
 
 The Figure 6 example here checks the definition of targeting error. It does
-not carry out Q4's random target-displacement experiment. That question is
-left for the teammate responsible for it. See the
+not carry out Q4's random target-displacement experiment. The completed
+[Q4 report](../q4_targeting_error/README.md) covers that experiment. See the
 [shared limitations and references](../README.md#limitations).

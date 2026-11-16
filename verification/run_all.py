@@ -21,7 +21,8 @@ def main():
         import numpy as np
         record(f"Run date: {date.today().isoformat()}\n")
         record(f"Python {platform.python_version()}; NumPy {np.__version__}\n")
-        record("Q4 is empty and is not included in this verification.\n")
+        record("Q1-Q3 examples and Q1-Q4 unit tests are included.\n")
+        record("Run the full Q4 sigma sweep separately; its saved results are not overwritten here.\n")
         for module in ("q1_tool_calibration.run", "q2_registration.run", "q3_biopsy_plan.run"):
             record(f"\n$ python -m {module}\n")
             process = subprocess.run(
@@ -44,7 +45,7 @@ def main():
         record(process.stdout)
         if process.returncode:
             raise SystemExit(process.returncode)
-        record("\nPASS: Q1-Q3 examples and the full test suite completed. Q4 remains empty.\n")
+        record("\nPASS: Q1-Q3 examples and all Q1-Q4 unit tests completed.\n")
 
 
 if __name__ == "__main__":

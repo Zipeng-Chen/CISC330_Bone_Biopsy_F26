@@ -58,11 +58,23 @@ test_near_tangent_intersection_keeps_nonzero_chord (q3_biopsy_plan.test_planning
 test_near_tangent_miss_is_not_rounded_to_a_hit (q3_biopsy_plan.test_planning.GeometryUtilitiesTests.test_near_tangent_miss_is_not_rounded_to_a_hit) ... ok
 test_point_to_infinite_line (q3_biopsy_plan.test_planning.GeometryUtilitiesTests.test_point_to_infinite_line) ... ok
 test_tangent_is_a_double_root (q3_biopsy_plan.test_planning.GeometryUtilitiesTests.test_tangent_is_a_double_root) ... ok
+test_actual_noisy_calibration_is_repeatable (q4_targeting_error.test_targeting_error.TargetingErrorTests.test_actual_noisy_calibration_is_repeatable) ... ok
+test_combined_trial_propagates_calibrated_tip_and_axis (q4_targeting_error.test_targeting_error.TargetingErrorTests.test_combined_trial_propagates_calibrated_tip_and_axis) ... ok
+test_ideal_scene_has_correct_units_and_zero_error (q4_targeting_error.test_targeting_error.TargetingErrorTests.test_ideal_scene_has_correct_units_and_zero_error) ... ok
+test_invalid_inputs_are_rejected (q4_targeting_error.test_targeting_error.TargetingErrorTests.test_invalid_inputs_are_rejected) ... ok
+test_known_marker_rotation_gives_hand_predicted_lateral_error (q4_targeting_error.test_targeting_error.TargetingErrorTests.test_known_marker_rotation_gives_hand_predicted_lateral_error) ... ok
+test_known_marker_shift_uses_perpendicular_not_endpoint_distance (q4_targeting_error.test_targeting_error.TargetingErrorTests.test_known_marker_shift_uses_perpendicular_not_endpoint_distance) ... ok
+test_no_feasible_sigma_differs_from_zero_passing_sigma (q4_targeting_error.test_targeting_error.TargetingErrorTests.test_no_feasible_sigma_differs_from_zero_passing_sigma) ... ok
+test_paired_trials_share_ct_and_target_noise (q4_targeting_error.test_targeting_error.TargetingErrorTests.test_paired_trials_share_ct_and_target_noise) ... ok
+test_sigma_sweep_changes_target_noise_without_changing_marker_noise (q4_targeting_error.test_targeting_error.TargetingErrorTests.test_sigma_sweep_changes_target_noise_without_changing_marker_noise) ... ok
+test_success_boundary_and_wilson_interval (q4_targeting_error.test_targeting_error.TargetingErrorTests.test_success_boundary_and_wilson_interval) ... ok
+test_target_only_noise_agrees_with_rayleigh_prediction (q4_targeting_error.test_targeting_error.TargetingErrorTests.test_target_only_noise_agrees_with_rayleigh_prediction) ... ok
+test_zero_target_displacement_keeps_instrument_noise_active (q4_targeting_error.test_targeting_error.TargetingErrorTests.test_zero_target_displacement_keeps_instrument_noise_active) ... ok
 test_calibrated_nonzero_tip_is_accepted_by_public_pipeline (verification.test_integration.RegistrationPlanningIntegrationTests.test_calibrated_nonzero_tip_is_accepted_by_public_pipeline) ... ok
 test_figure_6_displaced_target_uses_actual_registered_axis (verification.test_integration.RegistrationPlanningIntegrationTests.test_figure_6_displaced_target_uses_actual_registered_axis) ... ok
 test_registered_tool_produces_expected_off_center_plan (verification.test_integration.RegistrationPlanningIntegrationTests.test_registered_tool_produces_expected_off_center_plan) ... ok
 
 ----------------------------------------------------------------------
-Ran 63 tests in 0.172s
+Ran 75 tests in 1.091s
 
 OK

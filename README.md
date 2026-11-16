@@ -25,7 +25,7 @@ python -m pip install -r requirements.txt
 python -m verification.run_all
 ```
 
-This runs Q1-Q3, saves their outputs, and runs all 63 unit tests. Q4 is run separately using its Monte Carlo simulation command below. The recorded run uses Python 3.12.14 and NumPy 2.3.5;
+This runs Q1-Q3, saves their outputs, and runs all 75 unit tests, including 12 Q4-specific tests. The full Q4 Monte Carlo sweep is run separately using the command below; verification does not overwrite Q4's saved results. The recorded run uses Python 3.12.14 and NumPy 2.3.5;
 other numerical-library versions may produce small last-digit differences.
 The saved run can be read in
 [verification/full_reproduction.txt](verification/full_reproduction.txt), with
@@ -37,15 +37,16 @@ To run one question:
 python -m q1_tool_calibration.run
 python -m q2_registration.run
 python -m q3_biopsy_plan.run
-python -m q4_targeting_error.run --trials 10000 --combined-trials 0 --step 0.25
+python -m q4_targeting_error.run --trials 10000 --combined-trials 500 --step 0.25 --seed 2026
 ```
 
 Q1-Q3 commands print the hand predictions and computed answers, run that
 question's tests, and refresh its `outputs/run_log.txt` and
 `outputs/test_report.txt`. Q1 also saves all 500 noisy trials to JSON. 
-Q4 runs 10,000 Monte Carlo trials per procedural sigma, from 0 to 3.0 mm in increments of 0.25 mm, 
+Q4 runs 10,000 primary trials and 500 combined-calibration trials per procedural sigma, from 0 to 3.0 mm in increments of 0.25 mm,
 and saves its results to q4_targeting_error/outputs/targeting-results.json 
-and q4_targeting_error/outputs/targeting-sigma-sweep.csv
+and q4_targeting_error/outputs/targeting-sigma-sweep.csv.
+
 To run only the tests:
 
 ```bash
@@ -152,7 +153,20 @@ A geometrically intersecting line is therefore not enough to establish that
 a procedure is safe. A small marker-fit or calibration residual also cannot
 establish safety by itself.
 
-The Q4 simulation evaluates the compound targeting requirement using independent Gaussian marker-localization errors and target displacement. With 10,000 trials per procedural sigma, the baseline targeting success probability was 62.66%, below the required 95%. No tested procedural sigma satisfied the clinical requirement. These findings are limited to the assumed tool geometry, fixed tracker accuracy, and simulated error distributions. The primary simulation assumes exact tool calibration and does not propagate calibration uncertainty from Q1.
+The Q4 simulation evaluates the compound targeting requirement using independent Gaussian marker-localization errors and target displacement. With 10,000 primary trials per procedural sigma, the baseline targeting success probability was 62.66%, below the required 95%. The saved combined experiment includes noisy Q1 calibration and gives 61.40% baseline success over 500 trials. No tested procedural sigma satisfies the requirement in either experiment. The primary simulation assumes exact calibration; the combined sample is smaller, and its reported difference from the primary run is not a paired estimate of the calibration effect. These findings are limited to the assumed geometry and error distributions; see the Q4 report for confidence intervals and interpretation.
+
+## Submission contents
+
+The four question READMEs form the written report: each explains the method,
+hand calculations or statistical predictions, results, and limitations. Keep
+the code, tests, question outputs, figures, discussion transcripts, dependency
+files, and verification logs together so their relative links work.
+
+Exclude `.git/`, `__pycache__/`, `.venv/`, `.pytest_cache/`, compiled Python
+files, and any temporary reproduction folder from an uploaded archive. These
+are local working files, not assignment evidence. The `bone_biopsy` folder is
+an import interface used by Q4; it is required even though the implementations
+live in the question folders.
 
 ## References
 
