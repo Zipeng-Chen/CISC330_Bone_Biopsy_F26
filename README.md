@@ -25,8 +25,7 @@ python -m pip install -r requirements.txt
 python -m verification.run_all
 ```
 
-This runs Q1-Q3, saves their outputs, and runs all 63 unit tests. It explicitly
-skips the empty Q4 folder. The recorded run uses Python 3.12.14 and NumPy 2.3.5;
+This runs Q1-Q3, saves their outputs, and runs all 63 unit tests. Q4 is run separately using its Monte Carlo simulation command below. The recorded run uses Python 3.12.14 and NumPy 2.3.5;
 other numerical-library versions may produce small last-digit differences.
 The saved run can be read in
 [verification/full_reproduction.txt](verification/full_reproduction.txt), with
@@ -38,11 +37,15 @@ To run one question:
 python -m q1_tool_calibration.run
 python -m q2_registration.run
 python -m q3_biopsy_plan.run
+python -m q4_targeting_error.run --trials 10000 --combined-trials 0 --step 0.25
 ```
 
-Each command prints the hand predictions and computed answers, runs that
-question's tests, and refreshes its `outputs/run_log.txt` and
-`outputs/test_report.txt`. Q1 also saves all 500 noisy trials to JSON.
+Q1-Q3 commands print the hand predictions and computed answers, run that
+question's tests, and refresh its `outputs/run_log.txt` and
+`outputs/test_report.txt`. Q1 also saves all 500 noisy trials to JSON. 
+Q4 runs 10,000 Monte Carlo trials per procedural sigma, from 0 to 3.0 mm in increments of 0.25 mm, 
+and saves its results to q4_targeting_error/outputs/targeting-results.json 
+and q4_targeting_error/outputs/targeting-sigma-sweep.csv
 To run only the tests:
 
 ```bash
