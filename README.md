@@ -83,7 +83,7 @@ The question READMEs explain every file in their folders. Shared files are:
 Calibration finds the tip and axis relative to the tool markers. Registration
 finds where that calibrated tool is in a new CT image. Planning uses the
 registered tip and axis to calculate targeting error, tissue-core length, and
-insertion depth.
+insertion depth. Finally, Q4 simulates how marker-localization uncertainty and target displacement affect targeting accuracy.
 
 The existing public imports still work:
 
@@ -99,9 +99,9 @@ Existing submodule imports such as `bone_biopsy.registration` also work.
 There is one implementation of each algorithm, located in its question folder.
 
 The noise helper `sigma_for_radial_bound()` returns the per-coordinate sigma
-for the assignment's 1 mm radial 95% bound. Q4 can reuse this helper and the
-calibration, registration, and planning functions. Its target-displacement
-simulation and final threshold analysis still need to be added.
+for the assignment's 1 mm radial 95% bound.  Q4 reuses this helper and the 
+registration functions to simulate compound targeting error from Gaussian marker-localization noise and target displacement. 
+It performs 10,000 Monte Carlo trials per procedural sigma, evaluates the 3 mm targeting tolerance at a 100 mm insertion depth, and determines whether the 95% clinical success requirement is satisfied.
 
 ## Units and coordinate frames
 
