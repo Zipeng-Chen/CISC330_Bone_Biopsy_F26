@@ -13,8 +13,8 @@ Main experiment:
 
     python -m q4_targeting_error.run --trials 10000 --combined-trials 0 --step 0.25
 
-The primary experiment uses exact tool calibration and noisy CT marker
-registration. The optional combined experiment additionally includes
+Primary experiment uses exact tool calibration and noisy CT marker
+registration. Optional combined experiment additionally includes
 uncertainty from Q1 tool calibration.
 
 Instrument/tracker uncertainty remains fixed. Only procedural target
@@ -44,9 +44,8 @@ from q4_targeting_error.simulation import (
 OUTPUTS = Path(__file__).resolve().parent / "outputs"
 
 
-# ------------------------------------------------------------
+
 # Maximum tolerable procedural sigma
-# ------------------------------------------------------------
 
 def maximum_tolerable_sigma(
     results,
@@ -54,8 +53,7 @@ def maximum_tolerable_sigma(
     *,
     conservative=False,
 ):
-    """Return the largest tested sigma meeting the clinical criterion.
-
+    """Return largest tested sigma meeting the clinical criterion.
     None means no tested sigma meets the criterion.
     """
 
@@ -77,12 +75,10 @@ def maximum_tolerable_sigma(
     return max(passing) if passing else None
 
 
-# ------------------------------------------------------------
-# Save results
-# ------------------------------------------------------------
 
+# Results saving 
 def save_json(report, path):
-    """Save the complete experiment report as JSON."""
+    """Saves complete experimentreport as JSON."""
 
     path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -98,7 +94,7 @@ def save_json(report, path):
 
 
 def save_csv(results, path):
-    """Save sigma-sweep results in CSV format."""
+    """Saves sigma-sweep results in CSV form."""
 
     path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -153,12 +149,11 @@ def save_csv(results, path):
     return path
 
 
-# ------------------------------------------------------------
+
 # Print results
-# ------------------------------------------------------------
 
 def print_results_table(results):
-    """Print targeting-error statistics for each sigma."""
+    """Prints targeting-error statistics for each sigma."""
 
     print("\nPROCEDURAL SIGMA SWEEP")
     print("-" * 92)
@@ -202,7 +197,7 @@ def print_threshold(
     sigma,
     conservative_sigma,
 ):
-    """Print the estimated maximum tolerable procedural sigma."""
+    """Prints estimated maximum tolerable procedural sigma."""
 
     print(f"\n{name}:")
 
@@ -233,9 +228,8 @@ def print_threshold(
         )
 
 
-# ------------------------------------------------------------
+
 # Main experiment
-# ------------------------------------------------------------
 
 def run_experiment(
     *,
@@ -245,7 +239,7 @@ def run_experiment(
     sigma_step_mm=0.25,
     seed=2026,
 ):
-    """Run primary and optional combined Monte Carlo experiments."""
+    """Runs primary and optional combined Monte Carlo experiments."""
 
     if isinstance(trials, bool) or not isinstance(trials, int) or trials < 1:
         raise ValueError("trials must be a positive integer.")
@@ -269,10 +263,10 @@ def run_experiment(
             "sigma_step_mm must be positive and finite."
         )
 
-    # Construct the ideal scene.
+    # Constructs ideal scene.
     scene = ideal_scene()
 
-    # Validate ideal geometry.
+    # Validates ideal geometry.
     ideal_targeting_error = exact_error(scene)
 
     if not np.isclose(
@@ -284,7 +278,7 @@ def run_experiment(
             "The ideal scene should have zero targeting error."
         )
 
-    # Build procedural sigma grid.
+    # Builds procedural sigma grid.
     sigma_values = np.arange(
         0.0,
         sigma_max_mm + sigma_step_mm * 0.5,
@@ -310,9 +304,8 @@ def run_experiment(
 
     results = []
 
-    # --------------------------------------------------------
+    
     # Procedural sigma sweep
-    # --------------------------------------------------------
 
     for index, sigma in enumerate(
         sigma_values,
@@ -327,8 +320,7 @@ def run_experiment(
         )
 
         # Primary experiment:
-        # Exact calibration + noisy CT registration
-        # + procedural target displacement.
+        # Exact calibration + noisy CT registration + procedural target displacement.
         print(
             f"  Running primary experiment "
             f"({trials} trials)...",
@@ -345,9 +337,8 @@ def run_experiment(
 
         primary_stats = summarize(primary_errors)
 
-        # Optional combined experiment:
-        # Noisy calibration + noisy CT registration
-        # + procedural target displacement.
+        # The Optional combined experiment:
+        # Noisy calibration + noisy CT registration + procedural target displacement.
         if combined_trials > 0:
             print(
                 f"  Running combined experiment "
@@ -392,9 +383,8 @@ def run_experiment(
                 flush=True,
             )
 
-    # --------------------------------------------------------
+    
     # Maximum tolerable sigma
-    # --------------------------------------------------------
 
     primary_max = maximum_tolerable_sigma(
         results,
@@ -422,9 +412,8 @@ def run_experiment(
         combined_max = None
         combined_conservative = None
 
-    # --------------------------------------------------------
+    
     # Complete report
-    # --------------------------------------------------------
 
     report = {
         "configuration": {
@@ -493,9 +482,7 @@ def run_experiment(
     return report
 
 
-# ------------------------------------------------------------
 # CLI
-# ------------------------------------------------------------
 
 def main():
     parser = argparse.ArgumentParser(
@@ -622,9 +609,7 @@ def main():
         report["sigma_sweep"]
     )
 
-    # --------------------------------------------------------
     # Baseline at procedural sigma = 0
-    # --------------------------------------------------------
 
     baseline = report["baseline_sigma_zero"]
 
@@ -652,9 +637,7 @@ def main():
             f"success={stats['success_probability']:.2%}"
         )
 
-    # --------------------------------------------------------
     # Maximum tolerable sigma
-    # --------------------------------------------------------
 
     print(
         "\nMAXIMUM TOLERABLE PROCEDURAL SIGMA"
@@ -681,9 +664,8 @@ def main():
             report["maximum_conservative_sigma_mm"][key],
         )
 
-    # --------------------------------------------------------
-    # Save files
-    # --------------------------------------------------------
+
+    # Saves files
 
     output_dir = args.output_dir
 
@@ -708,4 +690,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
