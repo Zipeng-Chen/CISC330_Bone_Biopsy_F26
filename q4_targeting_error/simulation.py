@@ -32,7 +32,7 @@ from utils.geometry import rotation_about_axis
 INSERTION_DEPTH_MM = 100.0
 TARGET_TOLERANCE_MM = 3.0
 REQUIRED_SUCCESS_PROBABILITY = 0.95
-
+#Converts 95% radial tracker accuracy within 1mm to standard deviation of each Gaussian coordinate.
 TRACKER_SIGMA_MM = sigma_for_radial_bound(
     bound_mm=1.0,
     probability=0.95,
@@ -161,7 +161,7 @@ def trial(
     include_calibration_uncertainty=False,
     calibration_data=None,
 ):
-    """Simulate 1 biopsy targeting-error trial.
+    """Simulates 1 biopsy targeting-error trial.
     Primary experiment:
         Exact calibration
         + noisy CT markers
