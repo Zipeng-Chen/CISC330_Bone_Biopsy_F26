@@ -1,13 +1,13 @@
-"""Q4: Targeting Error Simulation for CISC/CMPE 330 A2.
+"""Targeting Error Simulations.
 
-Simulates the effect of:
+Simulates the effects of:
 1. CT marker-localization uncertainty (fixed tracker noise).
 2. Procedural target displacement (variable Gaussian sigma).
 3. Optional uncertainty from noisy Q1 tool calibration.
 
-All distances are in millimetres.
+All distances are in mm.
 
-The targeting error is the shortest perpendicular distance from the
+The targeting error is shortest perpendicular distance from
 displaced target to the registered needle axis, as defined in Figure 6.
 """
 
@@ -28,11 +28,7 @@ from bone_biopsy import (
 
 from utils.geometry import rotation_about_axis
 
-
-# ------------------------------------------------------------
-# Assignment constants
-# ------------------------------------------------------------
-
+#100 mm insertion depth, 3 mm maximum, targeting error, at least 95% successful target probability.
 INSERTION_DEPTH_MM = 100.0
 TARGET_TOLERANCE_MM = 3.0
 REQUIRED_SUCCESS_PROBABILITY = 0.95
@@ -43,13 +39,11 @@ TRACKER_SIGMA_MM = sigma_for_radial_bound(
 )
 
 
-# ------------------------------------------------------------
 # Data structures
-# ------------------------------------------------------------
 
 @dataclass(frozen=True)
 class IdealScene:
-    """Ground-truth biopsy geometry in the CT coordinate frame."""
+    """Ground-truth biopsy geometry in CT coordinate frame."""
 
     model: object
     ct_markers: np.ndarray
@@ -70,21 +64,15 @@ class TrialResult:
     procedural_sigma_mm: float
 
 
-# ------------------------------------------------------------
 # Ideal scene and exact validation
-# ------------------------------------------------------------
 
 def ideal_scene(insertion_depth_mm=INSERTION_DEPTH_MM):
-    """Construct the ideal scene described in Figure 6.
-
+    """Constructs ideal scene described in Figure 6.
     The model and CT frames coincide.
-
     Therefore:
         R = I
         t = 0
-
-    The planned target is exactly on the ideal needle axis,
-    100 mm from the tool tip by default.
+    Planned target is exactly on ideal needle axis, 100 mm from the tool tip by default.
     """
 
     depth = float(insertion_depth_mm)
@@ -112,7 +100,7 @@ def ideal_scene(insertion_depth_mm=INSERTION_DEPTH_MM):
 
 
 def exact_error(scene):
-    """Verify that the noise-free scene has zero targeting error."""
+    """Verify noise-free scene has zero targeting error."""
 
     registered = register_tool(
         scene.model.markers,
@@ -130,15 +118,14 @@ def exact_error(scene):
     )
 
 
-# ------------------------------------------------------------
+
 # Calibration observations for combined experiment
-# ------------------------------------------------------------
+
 
 def calibration_observations(scene, poses=60):
-    """Generate ground-truth pivot and spin observations.
-
+    """Generates ground-truth spin/pivot observations.
     These observations are generated once and reused.
-    Fresh independent Gaussian noise is added in each trial.
+    Fresh independent Gaussian noise added in each trial.
     """
 
     if isinstance(poses, (bool, np.bool_)) or not isinstance(
@@ -164,9 +151,7 @@ def calibration_observations(scene, poses=60):
     return pivot.observations, spin.observations
 
 
-# ------------------------------------------------------------
 # Individual Monte Carlo trial
-# ------------------------------------------------------------
 
 def trial(
     scene,
@@ -176,13 +161,11 @@ def trial(
     include_calibration_uncertainty=False,
     calibration_data=None,
 ):
-    """Simulate one biopsy targeting-error trial.
-
+    """Simulate 1 biopsy targeting-error trial.
     Primary experiment:
         Exact calibration
         + noisy CT markers
         + procedural target displacement.
-
     Combined experiment:
         Noisy Q1 calibration
         + noisy CT markers
@@ -197,9 +180,8 @@ def trial(
     if not isinstance(rng, np.random.Generator):
         raise TypeError("rng must be a numpy.random.Generator.")
 
-    # --------------------------------------------------------
+    
     # 1. Tool calibration
-    # --------------------------------------------------------
 
     if include_calibration_uncertainty:
 
@@ -235,9 +217,7 @@ def trial(
         calibrated_tip = scene.model.tip
         calibrated_axis = scene.model.axis
 
-    # --------------------------------------------------------
     # 2. Independent CT marker-localization error
-    # --------------------------------------------------------
 
     noisy_ct_markers = add_marker_noise(
         scene.ct_markers,
@@ -245,9 +225,8 @@ def trial(
         rng=rng,
     )
 
-    # --------------------------------------------------------
+
     # 3. Propagate marker error through rigid registration
-    # --------------------------------------------------------
 
     registered = register_tool(
         scene.model.markers,
@@ -256,9 +235,7 @@ def trial(
         calibrated_axis,
     )
 
-    # --------------------------------------------------------
     # 4. Independent procedural target displacement
-    # --------------------------------------------------------
 
     displacement = rng.normal(
         loc=0.0,
@@ -268,9 +245,8 @@ def trial(
 
     displaced_target = scene.target + displacement
 
-    # --------------------------------------------------------
+    
     # 5. Compound targeting error
-    # --------------------------------------------------------
 
     targeting_error = distance_point_to_line(
         displaced_target,
@@ -287,18 +263,16 @@ def trial(
     )
 
 
-# ------------------------------------------------------------
-# Paired trial for comparing calibration uncertainty
-# ------------------------------------------------------------
+
+# Paired trial of comparing calibration uncertainty
+
 
 def trial_pair(scene, procedural_sigma_mm, rng, calibration_data=None):
-    """Run both experiments with shared CT and procedural noise.
-
-    This paired design makes comparisons more reliable.
-
-    The combined experiment introduces additional independent
-    calibration noise, while the CT-marker and target-displacement
-    samples remain identical across the two experiments.
+    """Runs both experiments with shared CT and procedural noise.
+       Paired design makes comparisons more reliable.
+       The combined experiment introduces additional independent
+       calibration noise, while the CT-marker and target-displacement
+       samples remain identical across 2 experiments.
     """
 
     sigma = float(procedural_sigma_mm)
@@ -376,9 +350,7 @@ def trial_pair(scene, procedural_sigma_mm, rng, calibration_data=None):
     return float(registration_error), float(combined_error)
 
 
-# ------------------------------------------------------------
 # Monte Carlo simulation
-# ------------------------------------------------------------
 
 def simulate(
     scene,
@@ -459,13 +431,10 @@ def simulate_paired(
     return registration_errors, combined_errors
 
 
-# ------------------------------------------------------------
 # Statistical analysis
-# ------------------------------------------------------------
 
 def summarize(errors, tolerance_mm=TARGET_TOLERANCE_MM):
     """Summarize targeting-error magnitudes and clinical success.
-
     The Wilson confidence interval quantifies uncertainty in
     the estimated probability of satisfying the 3 mm tolerance.
     """
@@ -489,7 +458,7 @@ def summarize(errors, tolerance_mm=TARGET_TOLERANCE_MM):
 
     success_probability = successes / n
 
-    # Two-sided 95% Wilson binomial confidence interval.
+    # 2-sided 95% Wilson binomial confidence interval.
     z = 1.959963984540054
 
     denominator = 1.0 + z**2 / n
@@ -528,9 +497,7 @@ def summarize(errors, tolerance_mm=TARGET_TOLERANCE_MM):
     }
 
 
-# ------------------------------------------------------------
 # Procedural sigma sweep
-# ------------------------------------------------------------
 
 def sigma_sweep(
     scene,
@@ -577,11 +544,9 @@ def paired_sigma_sweep(
     trials=10000,
     seed=2026,
 ):
-    """Compare both experiments across procedural sigma values.
-
-    Tracker sigma remains fixed throughout the sweep.
-
-    Each sigma uses the same seed to improve reproducibility.
+    """Compares both experiments across procedural sigma values.
+       Tracker sigma remains fixed during sweep.
+       Each sigma has same seed for improving reproducibility.
     """
 
     results = []
