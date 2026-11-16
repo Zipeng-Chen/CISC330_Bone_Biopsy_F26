@@ -15,8 +15,6 @@ use its run log to compare the predictions with the computed results.
 | Q3: Biopsy planning | [q3_biopsy_plan](q3_biopsy_plan/README.md) | Implemented; hit, tangent, miss, and combined cases checked |
 | Q4: Targeting-error simulation | [q4_targeting_error](q4_targeting_error/) | Implemented and tested with Gaussian tracker noise, target displacement, and 10,000 Monte Carlo trials per sigma |
 
-Q4 contains only an empty `.gitkeep` file so Git preserves the folder.
-There is no Q4 implementation, explanation, or result yet.
 
 ## Run and reproduce
 
