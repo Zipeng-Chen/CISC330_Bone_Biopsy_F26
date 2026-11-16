@@ -152,10 +152,7 @@ A geometrically intersecting line is therefore not enough to establish that
 a procedure is safe. A small marker-fit or calibration residual also cannot
 establish safety by itself.
 
-The 95th-percentile calibration errors do not prove the separate 100 mm / 3 mm
-compound targeting requirement. That requires the remaining simulation with
-marker-localization error and displaced targets. No maximum tolerable target
-displacement is claimed here.
+The Q4 simulation evaluates the compound targeting requirement using independent Gaussian marker-localization errors and target displacement. With 10,000 trials per procedural sigma, the baseline targeting success probability was 62.66%, below the required 95%. No tested procedural sigma satisfied the clinical requirement. These findings are limited to the assumed tool geometry, fixed tracker accuracy, and simulated error distributions. The primary simulation assumes exact tool calibration and does not propagate calibration uncertainty from Q1.
 
 ## References
 
