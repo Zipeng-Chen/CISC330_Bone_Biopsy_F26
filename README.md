@@ -179,4 +179,8 @@ live in the question folders.
   and the distinction between marker fit and target accuracy.
 - Professor Fichtinger's feedback: Figure 2 uses cm; insertion traverses the
   full available core; and targeting error should be read from Figure 6.
+- Wolfram MathWorld, *Kabsch Algorithm*: rigid-body registration using corresponding 3D marker positions, including rotation estimation and least-squares alignment.
+  https://mathworld.wolfram.com/KabschAlgorithm.html
+- National Institute of Standards and Technology (NIST), *Chi-Square Cumulative Distribution Function*: the chi-square distribution used to convert the tracker's 95% radial localization bound into a per-coordinate Gaussian standard deviation.
+  https://itl.nist.gov/div898/software/dataplot/refman2/ch8/chscdf.pdf
 
